@@ -1,0 +1,11 @@
+[project]
+name = "pydictionary"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pynput>=1.8.1",
+    "rapidfuzz>=3.14.1",
+    "rich>=14.1.0",
+]
