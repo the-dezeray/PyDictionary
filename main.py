@@ -15,7 +15,23 @@ from core import Core
 from dependecies import check_dependecies, install_dependecies
 console = Console()
 
+def menu_layout():
+    """return a structured Layout object for menu
 
+    Returns:
+        Layout: Layout object
+    """
+    layout = Layout(name="root") 
+    layout.split(
+        Layout(name = "header"),
+        Layout(name="main", ),
+,
+
+    )
+    
+    layout["header"].update(Padding(pad=(0,70),renderable=Spinner(name="dots12")))
+    
+    return layout
 def make_layout() -> Layout:
     """return a structured Layout object
 
