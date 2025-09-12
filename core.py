@@ -1,11 +1,12 @@
 """the core module"""
 import json
+from rapidfuzz import fuzz, process
 
 from rich.table import Table
 from rich.layout import Layout
 from rich.layout import Layout
 from rich.padding import Padding
-
+from rich.style import Style
 class Core():
     """process keyboard inputs/commands and updating layout appearance""" 
 
@@ -21,7 +22,7 @@ class Core():
         #Core Related
         self.current_entry_text :str= ""
         self.layout : Layout = layout
-        self.formated_entry_text :str = "s"
+        self.formated_entry_text :str = ""
         self.suggestion :str = "" 
         self.running :str = True
         self.split_entry_text= ""
@@ -76,6 +77,9 @@ class Core():
             case "Key.enter":
                 self.run_command()
                 self.current_entry_text = ""
+                self.formated_entry_text = ""
+         
+
             #default
             case _:
                 pass
@@ -89,22 +93,39 @@ class Core():
             
     def show_similar_words(self):
         """updates layout to present a list of similar words in search"""
-        count = 0
-        last_word =self.split_entry_text[-1]
-        if last_word == "" and len(self.split_entry_text )> 1: last_word = self.split_entry_text[-2]
-        
-        #create a new table render-object
-        self.table =  Table(expand=True,show_edge=False)
+        last_word = self.split_entry_text[-1] or (
+            self.split_entry_text[-2] if len(self.split_entry_text) > 1 else ""
+        )
+
+        self.table = Table(expand=True, show_edge=False)
         self.table.add_column()
-        
-        for key,value in self.LEXICON.items():
-            if key.startswith(last_word):     
-                if count < self.max_displayed_similar_words:
-                    self.table.add_row(f"{key}")
-                    self.table.add_row("")
-                    count+=1
-        
-        self.layout["view"].update(Padding(self.table,pad =(0,40),expand=True))
+
+        # Try prefix matches first
+        word  = "";
+        word = self.LEXICON.get(last_word, None)
+        matches = [k for k in self.LEXICON if k.startswith(last_word)]
+        if word:
+            matches.insert(0, last_word)
+        # If not enough matches, fuzzy search
+        if len(matches) < self.max_displayed_similar_words:
+            extra_matches = process.extract(
+                last_word,
+                self.LEXICON.keys(),
+                limit=self.max_displayed_similar_words - len(matches),
+                score_cutoff=50
+            )
+            extra = [match[0] for match in extra_matches]
+            matches.extend(extra)
+
+        for index, key in enumerate(matches[:self.max_displayed_similar_words]):
+            if index == 0 and key == last_word:
+
+                self.table.add_row(f"[bold blue]> {key}[/bold blue]", style=Style(color="blue"))
+            else:
+                self.table.add_row(key)
+
+        self.layout["view"].update(Padding(self.table, pad=(0, 40), expand=True))
+
     def contains_primary_key(self):
         """checks entry box for primary key 
         Returns:
@@ -139,12 +160,11 @@ class Core():
 
     def run_command(self):
         """runs user command """
-        for word in (self.split_entry_text[:2]):
-            if  word in self.PRIMARY_KEY_WORD_MAPPING:
-                function : callable = self.PRIMARY_KEY_WORD_MAPPING[word]
-                self.split_entry_text.remove(word)
-                
-                function() 
+       
+ 
+        self.find()
+        
+
 
     def find(self):
         """finds word in dictinary and updates renderable to dispay result """
