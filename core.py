@@ -7,10 +7,12 @@ from rich.layout import Layout
 from rich.layout import Layout
 from rich.padding import Padding
 from rich.style import Style
+from rich.live import Live
+
 class Core():
     """process keyboard inputs/commands and updating layout appearance""" 
 
-    def __init__(self,layout:Layout) -> None:
+    def __init__(self) -> None:
         self.PRIMARY_KEY_WORD_MAPPING = {
             "find":self.find,
             "dictionary":self.dictionary,
@@ -21,14 +23,15 @@ class Core():
 
         #Core Related
         self.current_entry_text :str= ""
-        self.layout : Layout = layout
+        self.clayout  =None
         self.formated_entry_text :str = ""
         self.suggestion :str = "" 
         self.running :str = True
         self.split_entry_text= ""
         self.max_displayed_similar_words :int = 6
         #Layout related 
-        self.table :Table = None
+        self.table :Table = Table()
+        self.live : Live
         
         #JSON DEPENDANT
         self.SUGGESTIONS: dict = None 
@@ -90,7 +93,8 @@ class Core():
             self.format_text()
             self.edit_suggestion()
             self.show_similar_words()  
-            
+
+        self.live.update(self.clayout.update())
     def show_similar_words(self):
         """updates layout to present a list of similar words in search"""
         last_word = self.split_entry_text[-1] or (
@@ -117,14 +121,13 @@ class Core():
             extra = [match[0] for match in extra_matches]
             matches.extend(extra)
 
+
         for index, key in enumerate(matches[:self.max_displayed_similar_words]):
             if index == 0 and key == last_word:
 
                 self.table.add_row(f"[bold blue]> {key}[/bold blue]", style=Style(color="blue"))
             else:
                 self.table.add_row(key)
-
-        self.layout["view"].update(Padding(self.table, pad=(0, 40), expand=True))
 
     def contains_primary_key(self):
         """checks entry box for primary key 
@@ -183,7 +186,7 @@ class Core():
                     self.table.add_row(f"{value}")
         
         if found == False: self.table.add_row(f"[grey] [green]{last_word}[/green] not found  \n [i] Word maybe existing but not present in the database[/i][/grey]")
-        self.layout["view"].update(Padding(self.table,pad =(0,20),expand=True))     
+  
 
     def dictionary():
         pass
