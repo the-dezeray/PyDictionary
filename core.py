@@ -28,11 +28,13 @@ class Core():
         self.suggestion :str = "" 
         self.running :str = True
         self.split_entry_text= ""
+        self.selected :int = 0
         self.max_displayed_similar_words :int = 6
         #Layout related 
         self.table :Table = Table()
         self.live : Live
-        
+        self.selected_function : function = self.find #default function
+        self.command = self.find
         #JSON DEPENDANT
         self.SUGGESTIONS: dict = None 
         self.HELP_MESSAGES : dict = None 
@@ -69,6 +71,10 @@ class Core():
         input_string = input_string.replace("'","")
         
         match input_string:
+            case "Key.down":    
+                self.selected += 1
+            case "Key.up":
+                self.selected -= 1
             case "Key.space":
                 input_string = " "
             
@@ -78,10 +84,16 @@ class Core():
             
             #RUN COMMAND
             case "Key.enter":
-                self.run_command()
-                self.current_entry_text = ""
-                self.formated_entry_text = ""
-         
+                if self.clayout.name == "SettingTab":
+                    self.selected_function()
+                    
+                else:
+                    self.run_command()
+                    self.current_entry_text = ""
+                    self.formated_entry_text = ""
+            case "Key.esc":
+               from customLayouts import SettingTab
+               self.clayout = SettingTab(self)
 
             #default
             case _:
@@ -165,7 +177,7 @@ class Core():
         """runs user command """
        
  
-        self.find()
+        self.command()
         
 
 
@@ -197,3 +209,31 @@ class Core():
         pass
     def use_case():
         pass        
+
+    def getTable(self):
+        """returns the current table object"""
+        options = {
+            "find": "Find the meaning of a word",
+            "dictionary": "Open the dictionary",
+            "synonyms": "Show synonyms for a word",
+            "games": "Show games related to a word",
+            "use-case": "Show use cases for a word",
+   
+        }
+        table = Table.grid(expand=True)
+        self.selected = self.selected % len(options)
+        for index, (key, value) in enumerate(options.items()):
+            if index == self.selected:
+                self.selected_function = lambda: self.set_mode(key)    
+                table.add_row(f"[bold blue]{key}[/bold blue]", style=Style(color="blue"))
+            else:
+                table.add_row(key)
+        return table
+    def set_mode(self,mode:str):
+        """sets the current function to be executed when enter is pressed"""
+        from customLayouts import SettingTab,DictionaryLayout
+        self.command = self.find
+        self.clayout = DictionaryLayout(self)
+        self.table = Table()
+        self.live.update(self.clayout.update())
+        
