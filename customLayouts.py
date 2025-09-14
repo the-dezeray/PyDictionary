@@ -11,7 +11,7 @@ from rich.padding import Padding
 from rich.console import Console,Group
 from rich.spinner import Spinner
 
-
+from art import text2art
 
 from core import Core
 from dependecies import check_dependecies, install_dependecies
@@ -64,13 +64,20 @@ class DictionaryLayout(CustomLayout):
         super().__init__(core)
         self.core = core
         self.name = "DictionaryLayout"
+        self.f = 0
         
 
     def update(self):
         core : Core = self.core
         core.layout = lll()
-
-        core.layout["view"].update(Padding(core.table,pad =(0,40),expand=True))
+        if self.f == 0:
+            self.f = 1 
+            (word,meaning) = self.core.get_word_of_the_day()
+            art = text2art(f"{word}",font="tarty4")
+            from rich.align import Align
+            core.layout["view"].update(Padding(pad=(0,10),renderable=Padding(Align(f"[green]{art}[/green] \n\n{meaning}",align="center"))))
+        else:
+            core.layout["view"].update(Padding(core.table,pad =(0,40),expand=True))
         core.layout["main"].update(Padding(Panel(core.formated_entry_text),pad =(0,20)))
         core.layout["suggestion"].update(Padding(core.suggestion,pad =(0,20),expand=True))
         return core.layout

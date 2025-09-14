@@ -24,6 +24,7 @@ def main():
 
     core = Core()
     core.clayout = DictionaryLayout(core=core)
+   
     #listens for keyboard key press
     with Listener(on_press= core.save_key) as L:
         #Renders an auto-updating terminal

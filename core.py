@@ -236,4 +236,9 @@ class Core():
         self.clayout = DictionaryLayout(self)
         self.table = Table()
         self.live.update(self.clayout.update())
-        
+    def get_word_of_the_day(self):
+        """returns a random word from the lexicon"""
+        import random
+        word = random.choice(list(self.LEXICON.keys()))
+        meaning = self.LEXICON[word]
+        return word, meaning
