@@ -8,7 +8,8 @@ from rich.layout import Layout
 from rich.padding import Padding
 from rich.style import Style
 from rich.live import Live
-
+from rich.panel import Panel
+from rich.text import Text
 class Core():
     """process keyboard inputs/commands and updating layout appearance""" 
 
@@ -193,10 +194,23 @@ class Core():
         for key,value in self.LEXICON.items():
             if key.lower() == last_word.lower():
                     found = True
-                    self.table.add_row(f"{key.upper()}")
-                    value = value.replace(";","\n")         
-                    self.table.add_row(f"{value}")
-        
+    
+                    value = value.replace(";","\n") 
+                    # Split into lines to indent sub-points
+                    lines = value.split("\n")
+                    formatted_lines = []
+                    for line in lines:
+                        if line.strip().startswith(tuple(str(i) for i in range(1, 10))):  # indent numbered points
+                            formatted_lines.append(Text("  " + line.strip()))
+                        else:
+                            formatted_lines.append(Text("    " + line.strip()))  # indent continuation lines
+
+                    # Combine lines
+                    text_block = Text("\n").join(formatted_lines)
+                    
+                    panel = Panel(text_block, title=f"[bold yellow]{key}[/bold yellow]",title_align="left", expand=True)        
+                    self.table.add_row(panel)
+
         if found == False: self.table.add_row(f"[grey] [green]{last_word}[/green] not found  \n [i] Word maybe existing but not present in the database[/i][/grey]")
   
 
