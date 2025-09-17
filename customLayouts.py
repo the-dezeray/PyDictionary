@@ -77,7 +77,7 @@ class DictionaryLayout(CustomLayout):
             from rich.align import Align
             core.layout["view"].update(Padding(pad=(0,10),renderable=Padding(Align(f"[green]{art}[/green] \n\n{meaning}",align="center"))))
         else:
-            core.layout["view"].update(Padding(core.table,pad =(0,40),expand=True))
+            core.layout["view"].update(Padding(core.table,pad =(0,10),expand=True))
         core.layout["main"].update(Padding(Panel(core.formated_entry_text),pad =(0,20)))
         core.layout["suggestion"].update(Padding(core.suggestion,pad =(0,20),expand=True))
         return core.layout
