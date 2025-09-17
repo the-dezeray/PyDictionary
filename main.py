@@ -10,32 +10,36 @@ from rich.panel import Panel
 from rich.padding import Padding
 from rich.console import Console,Group
 from rich.spinner import Spinner
-
+from input_handler import InputHandler
 
 
 from core import Core
-from dependecies import check_dependecies, install_dependecies
+
+from ui_manager import UIManager
 console = Console()
+from app_state import AppState,UIState
 
-
-from customLayouts import DictionaryLayout
+from renderer.dictionary_renderer import DictionaryLayout
 def main():
     """Program Launch"""
 
     core = Core()
+    appState = AppState.DICTIONARY
+    uiState = UIState(current_screen=appState)
     core.clayout = DictionaryLayout(core=core)
-   
+    ui_manager = UIManager(core=core)
+    ui_manager.live = Live(ui_manager.get_current_layout(), refresh_per_second=10,auto_refresh=True)
+    input_handler =InputHandler(core=core, ui_manager=ui_manager)
+    keyboard_listener  = Listener(on_press= input_handler.handle_key)
     #listens for keyboard key press
-    with Listener(on_press= core.save_key) as L:
+    with keyboard_listener as l :
         #Renders an auto-updating terminal
-        with Live(core.clayout.update(), refresh_per_second=10,auto_refresh=True) as core.live:  # update 10  times a second to feel fluid
-
+        with ui_manager.live:
             while core.running: #if program has not been terminated
                 ...
 
-        L.join()
-    
-                
+        keyboard_listener.join()
+
 if __name__ == "__main__":
-    if not check_dependecies() : install_dependecies 
+ 
     main()

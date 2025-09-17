@@ -79,6 +79,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/63/fe/a17c106a1f4061ce83f04d14bcedcfb2c38c7793ea56bfb906a6fadae8cb/evdev-1.9.2.tar.gz", hash = "sha256:5d3278892ce1f92a74d6bf888cc8525d9f68af85dbe336c95d1c87fb8f423069", size = 33301, upload-time = "2025-05-01T19:53:47.69Z" }
 
 [[package]]
+name = "fuzzywuzzy"
+version = "0.18.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/11/4b/0a002eea91be6048a2b5d53c5f1b4dafd57ba2e36eea961d05086d7c28ce/fuzzywuzzy-0.18.0.tar.gz", hash = "sha256:45016e92264780e58972dca1b3d939ac864b78437422beecebb3095f8efd00e8", size = 28888, upload-time = "2020-02-13T21:06:27.054Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/43/ff/74f23998ad2f93b945c0309f825be92e04e0348e062026998b5eefef4c33/fuzzywuzzy-0.18.0-py2.py3-none-any.whl", hash = "sha256:928244b28db720d1e0ee7587acf660ea49d7e4c632569cad4f1cd7e68a5f0993", size = 18272, upload-time = "2020-02-13T21:06:25.209Z" },
+]
+
+[[package]]
 name = "gtts"
 version = "2.5.4"
 source = { registry = "https://pypi.org/simple" }
@@ -127,6 +136,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "art" },
+    { name = "fuzzywuzzy" },
     { name = "gtts" },
     { name = "pygame" },
     { name = "pynput" },
@@ -138,6 +148,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "art", specifier = ">=6.5" },
+    { name = "fuzzywuzzy", specifier = ">=0.18.0" },
     { name = "gtts", specifier = ">=2.5.4" },
     { name = "pygame", specifier = ">=2.6.1" },
     { name = "pynput", specifier = ">=1.8.1" },
