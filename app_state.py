@@ -18,6 +18,11 @@ class DictionaryState(Enum):
     DEFINITION = "search_by_definition"
     USE_CASE = "use_case"
 @dataclass
+class GameState:
+    score: int = 0
+    total_questions: int = 0
+    current_question: int = 0
+@dataclass
 class UIState:
     current_screen: AppState = AppState.DICTIONARY
     selected_index: int = 0

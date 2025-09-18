@@ -16,6 +16,7 @@ class UIManager:
     
     def __init__(self,core):
         self.core = core
+        core.ui_manager = self
         self.live : "Live|None" 
         self.ui_state = UIState()
 

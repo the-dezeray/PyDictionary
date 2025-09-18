@@ -1,0 +1,25 @@
+def wrong_answer(core):
+    core.answer_status = "wrong"
+def correct_answer(core):
+    core.answer_status = "correct"
+def gameSelectionTable(core:"Core",word = ""):
+    meaning = DictionaryService.find_word_definition(word)[1] if word else ""
+    random_meanings = DictionaryService.get_random_meanings(3) if not meaning else []
+
+    options = [{word:wrong_answer} for word, _ in random_meanings]
+    
+    table = Table.grid(expand=True)
+    core.selected = core.selected % len(options)
+    
+    # Get the keys as a list to access by index
+
+
+    for index, option in enumerate(options):
+        if index == core.selected:
+            # Fix the closure issue by capturing the current function value
+            selected_function = option[list(option.keys())[0]]
+            core.command = selected_function
+            table.add_row(f"[bold blue]{list(option.keys())[0]}[/bold blue]", style=Style(color="blue"))
+        else:
+            table.add_row(f"[bold blue]{list(option.keys())[0]}[/bold blue]", style=Style(color="blue"))
+    return table

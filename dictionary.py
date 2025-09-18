@@ -1,11 +1,11 @@
 from renderers.dictionary_services import DictionaryService
 
-# Initialize the dictionary service
-_dictionary_service = DictionaryService()
+# Initialize the static dictionary service
+DictionaryService.initialize()
 
 # Export commonly used data for backward compatibility
-LEXICON = _dictionary_service.lexicon
-SUGGESTIONS = _dictionary_service.suggestions
+LEXICON = DictionaryService.lexicon()
+SUGGESTIONS = DictionaryService.suggestions()
 
-# Export the service instance for direct use
-dictionary_service = _dictionary_service
+# Export the service class for direct use
+dictionary_service = DictionaryService

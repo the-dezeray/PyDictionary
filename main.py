@@ -28,7 +28,9 @@ def main():
     uiState = UIState(current_screen=appState)
     #core.layout = DictionaryRenderer(core=core)
     ui_manager = UIManager(core=core)
+    
     ui_manager.live = Live(ui_manager.get_current_layout(), refresh_per_second=10,auto_refresh=True)
+    core.ui_manager = ui_manager
     input_handler =InputHandler(core=core, ui_manager=ui_manager)
     keyboard_listener  = Listener(on_press= input_handler.handle_key)
     #listens for keyboard key press

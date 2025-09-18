@@ -15,32 +15,42 @@ from rapidfuzz import process
 
 
 class DictionaryService:
-    """Service class for handling all dictionary-related operations"""
+    """Static service class for handling all dictionary-related operations"""
     
-    def __init__(self, dictionary_path: str = "data/dictionary.json", 
-                 interface_guide_path: str = "data/interface_guide.json"):
+    # Class variables for data storage
+    _lexicon: Optional[Dict] = None
+    _suggestions: Optional[Dict] = None
+    _interface_guide: Optional[Dict] = None
+    _dictionary_path: str = "data/dictionary.json"
+    _interface_guide_path: str = "data/interface_guide.json"
+    _initialized: bool = False
+    
+    @classmethod
+    def initialize(cls, dictionary_path: str = "data/dictionary.json", 
+                   interface_guide_path: str = "data/interface_guide.json") -> None:
         """Initialize the dictionary service with data paths
         
         Args:
             dictionary_path (str): Path to the main dictionary JSON file
             interface_guide_path (str): Path to the interface guide JSON file
         """
-        self.dictionary_path = dictionary_path
-        self.interface_guide_path = interface_guide_path
-        
-        # Data storage
-        self._lexicon: Optional[Dict] = None
-        self._suggestions: Optional[Dict] = None
-        self._interface_guide: Optional[Dict] = None
-        
-        # Load initial data
-        self._load_all_data()
+        cls._dictionary_path = dictionary_path
+        cls._interface_guide_path = interface_guide_path
+        cls._load_all_data()
+        cls._initialized = True
     
-    def _load_all_data(self) -> None:
+    @classmethod
+    def _load_all_data(cls) -> None:
         """Load all dictionary data from JSON files"""
-        self._lexicon = self.load_json(self.dictionary_path)
-        self._interface_guide = self.load_json(self.interface_guide_path)
-        self._suggestions = self._interface_guide.get("SUGGESTIONS", {})
+        cls._lexicon = cls.load_json(cls._dictionary_path)
+        cls._interface_guide = cls.load_json(cls._interface_guide_path)
+        cls._suggestions = cls._interface_guide.get("SUGGESTIONS", {}) if cls._interface_guide else {}
+    
+    @classmethod
+    def _ensure_initialized(cls) -> None:
+        """Ensure the service is initialized with default paths if not already"""
+        if not cls._initialized:
+            cls.initialize()
     
     @staticmethod
     def load_json(file_path: str) -> Dict:
@@ -66,17 +76,20 @@ class DictionaryService:
             print(f"Error: Invalid JSON in file {file_path}: {e}")
             return {}
     
-    @property
-    def lexicon(self) -> Dict:
+    @classmethod
+    def lexicon(cls) -> Dict:
         """Get the loaded lexicon dictionary"""
-        return self._lexicon or {}
+        cls._ensure_initialized()
+        return cls._lexicon or {}
     
-    @property
-    def suggestions(self) -> Dict:
+    @classmethod
+    def suggestions(cls) -> Dict:
         """Get the suggestions dictionary"""
-        return self._suggestions or {}
+        cls._ensure_initialized()
+        return cls._suggestions or {}
     
-    def find_word_definition(self, word_to_find: str) -> Tuple[Optional[str], Optional[str]]:
+    @classmethod
+    def find_word_definition(cls, word_to_find: str) -> Tuple[Optional[str], Optional[str]]:
         """Find word definition in dictionary
         
         Args:
@@ -85,28 +98,32 @@ class DictionaryService:
         Returns:
             Tuple[Optional[str], Optional[str]]: (word, definition) if found, (None, None) if not found
         """
-        if not self._lexicon:
+        cls._ensure_initialized()
+        if not cls._lexicon:
             return None, None
             
-        for key, value in self._lexicon.items():
+        for key, value in cls._lexicon.items():
             if key.lower() == word_to_find.lower():
                 return key, value
         return None, None
     
-    def get_word_of_the_day(self) -> Tuple[str, str]:
+    @classmethod
+    def get_word_of_the_day(cls) -> Tuple[str, str]:
         """Get a random word from the lexicon as word of the day
         
         Returns:
             Tuple[str, str]: (word, meaning) pair
         """
-        if not self._lexicon:
+        cls._ensure_initialized()
+        if not cls._lexicon:
             return "dictionary", "A reference work containing words and their meanings"
             
-        word = random.choice(list(self._lexicon.keys()))
-        meaning = self._lexicon[word]
+        word = random.choice(list(cls._lexicon.keys()))
+        meaning = cls._lexicon[word]
         return word, meaning
     
-    def find_similar_words(self, partial_word: str, max_results: int = 6, score_cutoff: int = 50) -> List[str]:
+    @classmethod
+    def find_similar_words(cls, partial_word: str, max_results: int = 6, score_cutoff: int = 50) -> List[str]:
         """Find words similar to the partial word using prefix matching and fuzzy search
         
         Args:
@@ -117,18 +134,19 @@ class DictionaryService:
         Returns:
             List[str]: List of similar words
         """
-        if not self._lexicon or not partial_word:
+        cls._ensure_initialized()
+        if not cls._lexicon or not partial_word:
             return []
         
         matches = []
         
         # Try exact match first
-        exact_match = self._lexicon.get(partial_word)
+        exact_match = cls._lexicon.get(partial_word)
         if exact_match:
             matches.append(partial_word)
         
         # Try prefix matches
-        prefix_matches = [k for k in self._lexicon if k.startswith(partial_word.lower())]
+        prefix_matches = [k for k in cls._lexicon if k.startswith(partial_word.lower())]
         # Remove exact match if already added
         if partial_word in prefix_matches and exact_match:
             prefix_matches.remove(partial_word)
@@ -140,7 +158,7 @@ class DictionaryService:
             remaining_slots = max_results - len(matches)
             fuzzy_matches = process.extract(
                 partial_word,
-                self._lexicon.keys(),
+                cls._lexicon.keys(),
                 limit=remaining_slots,
                 score_cutoff=score_cutoff
             )
@@ -152,15 +170,18 @@ class DictionaryService:
         
         return matches[:max_results]
     
-    def get_word_count(self) -> int:
+    @classmethod
+    def get_word_count(cls) -> int:
         """Get the total number of words in the dictionary
         
         Returns:
             int: Number of words in the lexicon
         """
-        return len(self._lexicon) if self._lexicon else 0
+        cls._ensure_initialized()
+        return len(cls._lexicon) if cls._lexicon else 0
     
-    def word_exists(self, word: str) -> bool:
+    @classmethod
+    def word_exists(cls, word: str) -> bool:
         """Check if a word exists in the dictionary
         
         Args:
@@ -169,11 +190,13 @@ class DictionaryService:
         Returns:
             bool: True if word exists, False otherwise
         """
-        if not self._lexicon:
+        cls._ensure_initialized()
+        if not cls._lexicon:
             return False
-        return word.lower() in [k.lower() for k in self._lexicon.keys()]
+        return word.lower() in [k.lower() for k in cls._lexicon.keys()]
     
-    def get_suggestion(self, state_value: str) -> str:
+    @classmethod
+    def get_suggestion(cls, state_value: str) -> str:
         """Get suggestion text for a given state
         
         Args:
@@ -182,8 +205,27 @@ class DictionaryService:
         Returns:
             str: Suggestion text
         """
-        return self._suggestions.get(state_value, "Enter a command")
+        cls._ensure_initialized()
+        return cls._suggestions.get(state_value, "Enter a command")
     
-    def reload_data(self) -> None:
+    @classmethod
+    def reload_data(cls) -> None:
         """Reload all dictionary data from files"""
-        self._load_all_data()
+        cls._load_all_data()
+    @classmethod
+    def get_random_meanings(cls, count: int = 3) -> List[Tuple[str, str]]:
+        """Get a list of random (word, meaning) pairs from the lexicon
+        
+        Args:
+            count (int): Number of random pairs to return   
+        Returns:
+            List[Tuple[str, str]]: List of (word, meaning) pairs
+        """
+        cls._ensure_initialized()
+        if not cls._lexicon:
+            return []
+        
+        # More memory efficient for large dictionaries
+        keys = list(cls._lexicon.keys())
+        selected_keys = random.sample(keys, min(count, len(keys)))
+        return [cls._lexicon[key] for key in selected_keys]

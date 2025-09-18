@@ -105,3 +105,51 @@ def getTable(core:"Core"):
         else:
             table.add_row(key)
     return table
+
+from renderers.dictionary_services import DictionaryService
+
+def gameSelectionTable(core:"Core"):
+    def switch_to_quiz():
+        """Switch to dictionary screen with optional additional setup"""
+        core.current_screen = AppState.QUIZGAME
+        #core.command = core.PRIMARY_KEY_WORD_MAPPING["find"]
+        #core.dictionary_state = DictionaryState.FIND
+    options = {
+        "guess the word": lambda: print("Starting 'Guess the Word'..."),  # Placeholder
+        "guess the definition": lambda: print("Starting 'Guess the Definition'..."),  # Placeholder 
+        "hangman": lambda: print("Starting 'Hangman'..."),  # Placeholder
+        "quiz": switch_to_quiz,
+        "back": lambda: setattr(core, 'current_screen', AppState.MENU)
+    }
+    table = Table.grid(expand=True)
+    core.selected = core.selected % len(options)
+    
+    # Get the keys as a list to access by index
+    option_keys = list(options.keys())
+    
+    for index, key in enumerate(option_keys):
+        if index == core.selected:
+            # Fix the closure issue by capturing the current function value
+            selected_function = options[key]
+            core.command = selected_function
+            table.add_row(f"[bold blue]{key}[/bold blue]", style=Style(color="blue"))
+        else:
+            table.add_row(key)
+    return table
+def quizTable(core:"Core",options):
+
+    table = Table.grid(expand=True)
+    core.selected = core.selected % len(options)
+    
+    # Get the keys as a list to access by index
+
+    from rich.panel import Panel
+    for index, option in enumerate(options):
+        if index == core.selected:
+            # Fix the closure issue by capturing the current function value
+            selected_function = option[list(option.keys())[0]]
+            core.command = selected_function
+            table.add_row(Panel(f"[bold blue]{list(option.keys())[0]}[/bold blue]"), style=Style(color="blue"))
+        else:
+            table.add_row(Panel(f"{list(option.keys())[0]}"))
+    return table

@@ -10,7 +10,7 @@ from rich.style import Style
 from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
-from app_state import AppState,DictionaryState
+from app_state import AppState,DictionaryState,GameState
 from dictionary import dictionary_service
 def count_words_in_definition(text):
         """Count words in definition text, ignoring Rich markup tags"""
@@ -53,8 +53,9 @@ class Core():
         self.table_of_results :Table = None
         self.dictionary_state :DictionaryState = DictionaryState.FIND# Current state in dictionary (e.g., 'find', 'synonym')   
         self.command : callable = lambda: find(self)
-        self.current_screen : AppState= AppState.DICTIONARY
+        self.current_screen : AppState= AppState.QUIZGAME
         self.key_count :int = 0
+        self.game_state = GameState()
 
     def navigate(self,direction:str):
         """navigate through menu options"""
@@ -62,8 +63,6 @@ class Core():
             self.selected -= 1
         elif direction == "down":
             self.selected += 1
-
-
 
 
 def dictionary(core):

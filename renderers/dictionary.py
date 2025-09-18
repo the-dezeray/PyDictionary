@@ -17,8 +17,8 @@ class DictionaryRenderer(Renderer):
         self.name = "DictionaryLayout"
         self.f = 0
         
-        # Initialize dictionary service
-        self.dictionary_service = DictionaryService()
+        # Initialize static dictionary service
+        DictionaryService.initialize()
         self.suggestion = "Enter a command"
     def format_text(self,core: Core):
         """formats the current user-input to highlight primary keys tags and text"""
@@ -33,7 +33,7 @@ class DictionaryRenderer(Renderer):
         return formated_entry_text
     def edit_suggestion(self, core: Core):
         """Updates the suggestion renderable-object as input is updated"""
-        suggestion = self.dictionary_service.get_suggestion(core.dictionary_state.value)
+        suggestion = DictionaryService.get_suggestion(core.dictionary_state.value)
         return suggestion
     def update(self,core: Core):
 
@@ -64,7 +64,7 @@ class DictionaryRenderer(Renderer):
         table.add_column()
 
         # Get similar words using the dictionary service
-        matches = self.dictionary_service.find_similar_words(
+        matches = DictionaryService.find_similar_words(
             last_word, 
             max_results=core.max_displayed_similar_words
         )
@@ -77,7 +77,7 @@ class DictionaryRenderer(Renderer):
         return table
     def get_word_of_the_day(self):
         """Returns a random word from the lexicon"""
-        return self.dictionary_service.get_word_of_the_day()
+        return DictionaryService.get_word_of_the_day()
     def contains_primary_key(self,core:Core):
         """checks entry box for primary key 
         Returns:
