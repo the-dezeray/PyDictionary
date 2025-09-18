@@ -1,16 +1,11 @@
-import json
-def load_json(file_path:str):
-    """returns file contents of a JSON-file 
+from renderers.dictionary_services import DictionaryService
 
-    Args:
-        file_path (str): string of the file path
-    Returns:
-        dict : file contents
-    """
-    with open(file_path,"r")as json_file:
-        file_content : dict = json.load(json_file)
-    return file_content
+# Initialize the dictionary service
+_dictionary_service = DictionaryService()
 
-LEXICON = load_json("dictionary.json")
-interface_guide= load_json("interface_guide.json")
-SUGGESTIONS = interface_guide["SUGGESTIONS"]
+# Export commonly used data for backward compatibility
+LEXICON = _dictionary_service.lexicon
+SUGGESTIONS = _dictionary_service.suggestions
+
+# Export the service instance for direct use
+dictionary_service = _dictionary_service

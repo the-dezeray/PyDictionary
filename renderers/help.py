@@ -1,8 +1,15 @@
 
+from renderers.abtract_render import Renderer
+from rich.padding import Padding
+from rich.layout import Layout
+from rich.panel import Panel
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from core import Core
 class HelpRenderer(Renderer):
     """Renders the help screen"""
     
-    def render(self, state: UIState) -> Layout:
+    def update(self, core: "Core") -> Layout:
         layout = Layout(name="root")
         layout.split(Layout(name="main"))
         

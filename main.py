@@ -19,14 +19,14 @@ from ui_manager import UIManager
 console = Console()
 from app_state import AppState,UIState
 
-from renderer.dictionary_renderer import DictionaryLayout
+from renderers.dictionary import DictionaryRenderer
 def main():
     """Program Launch"""
 
     core = Core()
     appState = AppState.DICTIONARY
     uiState = UIState(current_screen=appState)
-    core.clayout = DictionaryLayout(core=core)
+    #core.layout = DictionaryRenderer(core=core)
     ui_manager = UIManager(core=core)
     ui_manager.live = Live(ui_manager.get_current_layout(), refresh_per_second=10,auto_refresh=True)
     input_handler =InputHandler(core=core, ui_manager=ui_manager)

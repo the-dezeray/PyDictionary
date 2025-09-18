@@ -7,14 +7,16 @@ class AppState(Enum):
     DICTIONARY = "dictionary"
     SETTINGS = "settings"
     HELP = "help"
-
-class CustomLayout:
-    def __init__(self,core):
-        self.core = core
-        self.name = "CustomLayout"
-        ...
-    def update(self):
-        ...
+    MENU = "menu"
+    GAMES = "games"
+    QUIZGAME = "quiz_game"
+    GAMES_SELECTION = "game_selection"
+class DictionaryState(Enum):
+    FIND = "find"
+    SYNONYM = "synonym"
+    RHYMING_WORDS = "rhyming_words"
+    DEFINITION = "search_by_definition"
+    USE_CASE = "use_case"
 @dataclass
 class UIState:
     current_screen: AppState = AppState.DICTIONARY

@@ -10,7 +10,8 @@ from rich.style import Style
 from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
-from dictionary import LEXICON
+from app_state import AppState,DictionaryState
+from dictionary import dictionary_service
 def count_words_in_definition(text):
         """Count words in definition text, ignoring Rich markup tags"""
         # Remove Rich markup tags like [bold], [/bold], [italic], etc.
@@ -23,11 +24,14 @@ class Core():
 
     def __init__(self) -> None:
         self.PRIMARY_KEY_WORD_MAPPING = {
-            "find":(),
-            "dictionary":(),
-            "use-case":(),
-            "help":(),
-            "synonyms":(),
+            "find":lambda: find(self),
+            "search_by_definition":lambda: search_by_definition(self),
+            "synonym":lambda: synonyms(self),
+            "rhyming_words":lambda: rhyming_words(self),
+            "use_case":lambda: use_case(self),
+            "games":lambda: use_case(self),
+            "help":lambda: help(self),
+            "exit":lambda: exit(0)
             }
 
         #Core Related
@@ -47,52 +51,44 @@ class Core():
         self.table :Table = Table()
         self.live : Live
         self.table_of_results :Table = None
-        
+        self.dictionary_state :DictionaryState = DictionaryState.FIND# Current state in dictionary (e.g., 'find', 'synonym')   
         self.command : callable = lambda: find(self)
-
+        self.current_screen : AppState= AppState.DICTIONARY
         self.key_count :int = 0
 
+    def navigate(self,direction:str):
+        """navigate through menu options"""
+        if direction == "up":
+            self.selected -= 1
+        elif direction == "down":
+            self.selected += 1
+
+
+
+
+def dictionary(core):
+    ...
+def use_case(core):
+    ...
+def help(core):
+    ...
+def synonyms(core):
+    ...
+
+def use_case(core):
+    ...
+def search_by_definition(core):
+    ...
     
+def rhyming_words(core):
+    ...
 
-
-
-
-
-
-    
-
-
-
-
-
-def getTable(self):
-    """returns the current table object"""
-    options = {
-        "find": "Find the meaning of a word",
-        "dictionary": "Open the dictionary",
-        "synonyms": "Show synonyms for a word",
-        "games": "Show games related to a word",
-        "use-case": "Show use cases for a word",
-
-    }
-    table = Table.grid(expand=True)
-    self.selected = self.selected % len(options)
-    for index, (key, value) in enumerate(options.items()):
-        if index == self.selected:
-            self.selected_function = lambda: self.set_mode(key)    
-            table.add_row(f"[bold blue]{key}[/bold blue]", style=Style(color="blue"))
-        else:
-            table.add_row(key)
-    return table
-from format_text import truncate_definition , format_definition
+from util.format_text import truncate_definition , format_definition
 
 
 def find_word_definition(word_to_find):
     """Find word definition in dictionary"""
-    for key, value in LEXICON.items():
-        if key.lower() == word_to_find.lower():
-            return key, value
-    return None, None
+    return dictionary_service.find_word_definition(word_to_find)
 
 
 def build_definition_panel(word, formatted_definition, core):

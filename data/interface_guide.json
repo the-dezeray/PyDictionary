@@ -1,13 +1,18 @@
-{
+
+    {
     "SUGGESTIONS": {
         "add" : "function: [grey]ADD[grey] \n this is a function used to add other note types",
         
         "delete ": "used to delete other notes and take a variety of notes",
         
-        "dictionary" : "find items in the dicionary",
         
-        "find": "[#363838] [code]FIND[/code] a function which return a words meaning if found \n Parameters : a [blue]single-word[/blue][/#363838]"
-        
+ "rhyming_words": "[#363838] [code]RHYMES[/code] a function which return a words rhymes if found \n Parameters : a [blue]single-word[/blue][/#363838]",
+        "find": "[#363838] [code]FIND[/code] a function which return a words meaning if found \n Parameters : a [blue]single-word[/blue][/#363838]",
+        "synonym": "[#363838] [code]SYNONYMS[/code] a function which return a words synonyms if found \n Parameters : a [blue]single-word[/blue][/#363838]",
+       
+        "search_by_definition": "[#363838] [code]SEARCH BY DEFINITION[/code] a function which return a words meaning if found \n Parameters : a [blue]single-word[/blue][/#363838]",
+        "use_case": "[#363838] [code]USE CASE[/code] a function which return a words use cases if found \n Parameters : a [blue]single-word[/blue][/#363838]"
+
         },
 
     "HELP":{

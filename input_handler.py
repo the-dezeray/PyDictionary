@@ -1,5 +1,6 @@
 
 from typing import Callable, Dict, TYPE_CHECKING
+from app_state import AppState
 if TYPE_CHECKING:
     from core import Core
     from ui_manager import UIManager
@@ -18,6 +19,9 @@ class InputHandler:
             #'Key.esc': lambda: self.ui_manager.switch_screen(AppState.SETTINGS),
             'Key.enter': self._handle_enter,
             'Key.backspace': self._handle_backspace,
+            'Key.tab': lambda: self.ui_manager.switch_screen(AppState.MENU),  # Ignore tab key
+            "Key.up": lambda: core.navigate("up"),
+            "Key.down": lambda: core.navigate("down"),
         }
     def handle_key(self, key: str) -> None:
         """Process a keyboard event"""
@@ -43,8 +47,9 @@ class InputHandler:
         
     def _handle_enter(self) -> None:
         """Handle enter key based on current screen"""
-        if self.core.clayout.name == "SettingTab":
-            self.core.selected_function()
+        from app_state import AppState
+        if self.core.current_screen == AppState.MENU:
+            self.core.command()
         else:
             self.run_command()
             self.core.current_entry_text = ""

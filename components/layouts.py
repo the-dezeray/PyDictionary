@@ -2,7 +2,8 @@ from rich.layout import Layout
 from rich.padding import Padding
 from rich.console import Console,Group
 from rich.spinner import Spinner
-def lll():
+from components.settings import getTable
+def main_layout()->Layout:
     """return a structured Layout object
 
     Returns:
@@ -20,4 +21,26 @@ def lll():
     
     layout["header"].update(Padding(pad=(0,70),renderable=Spinner(name="dots12")))
     
+    return layout
+
+def settings_layout()->Layout:
+    """return a structured Layout object for settings
+
+    Returns:
+        Layout: Layout object
+    """
+    layout = Layout(name="main") 
+
+    
+
+    return layout
+
+def menu_layout()->Layout:
+    """return a structured Layout object for settings
+
+    Returns:
+        Layout: Layout object
+    """
+    layout = Layout(name="main") 
+
     return layout
