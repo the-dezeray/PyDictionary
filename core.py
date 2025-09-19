@@ -39,7 +39,7 @@ class Core():
         self.clayout  =None
         self.formated_entry_text :str = ""
         self.suggestion :str = "" 
-        self.running :str = True
+        self.running :bool = True
         self.split_entry_text= ""
         self.selected :int = 0
         self.max_displayed_similar_words :int = 6

@@ -29,7 +29,7 @@ def main():
     #core.layout = DictionaryRenderer(core=core)
     ui_manager = UIManager(core=core)
     
-    ui_manager.live = Live(ui_manager.get_current_layout(), refresh_per_second=10,auto_refresh=True)
+    ui_manager.live = Live(ui_manager.get_current_layout(), refresh_per_second=10,auto_refresh=True,screen=True)
     core.ui_manager = ui_manager
     input_handler =InputHandler(core=core, ui_manager=ui_manager)
     keyboard_listener  = Listener(on_press= input_handler.handle_key)
@@ -38,8 +38,9 @@ def main():
         #Renders an auto-updating terminal
         with ui_manager.live:
             while core.running: #if program has not been terminated
-                ...
-
+                time.sleep(0.1)
+        keyboard_listener.stop()
+        ui_manager.live.stop()   
         keyboard_listener.join()
 
 if __name__ == "__main__":

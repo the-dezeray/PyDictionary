@@ -89,7 +89,8 @@ def getTable(core:"Core"):
         "rhymes": switch_to_rhymes,
         "games": switch_to_games,
         "use-case": switch_to_use_case,
-        "help": switch_to_help
+        "help": switch_to_help,
+        "exit": lambda: setattr(core, 'running', False)
     }
     
     table = Table.grid(expand=True)
