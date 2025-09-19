@@ -78,7 +78,7 @@ def getTable(core:"Core"):
         core.current_screen = AppState.DICTIONARY
         core.command = core.PRIMARY_KEY_WORD_MAPPING["search_by_definition"]
         core.dictionary_state = DictionaryState.DEFINITION
-    switch_to_synonyms = lambda: print("Switching to synonyms...")  # Placeholder
+
     switch_to_games =  lambda: setattr(core, 'current_screen', AppState.GAMES_SELECTION)
     
     switch_to_help= lambda : setattr(core, 'current_screen', AppState.HELP)

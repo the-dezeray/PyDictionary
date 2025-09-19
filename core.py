@@ -6,6 +6,7 @@ from rich.table import Table
 from rich.layout import Layout
 from rich.layout import Layout
 from rich.padding import Padding
+from kn import get_synonyms
 from rich.style import Style
 from rich.live import Live
 from rich.panel import Panel
@@ -72,15 +73,134 @@ def use_case(core):
 def help(core):
     ...
 def synonyms(core):
-    ...
+    """Find synonyms for a word and update renderable to display results"""
+    a  = Table.grid()
+    from rich.spinner import Spinner
+    a.add_column()
+    from rich.align import Align
+    a.add_row(Align.center(Spinner("dots",text="Finding Synonyms...")))
+    core.table_of_results = a
+    core.ui_manager.refresh()
+
+    
+    split_entry_text = core.current_entry_text.split(" ")
+    last_word = split_entry_text[-1]
+    
+    if last_word == "" and len(split_entry_text) > 1:
+        last_word = split_entry_text[-2]
+    
+    table = Table(expand=True, show_edge=False)
+    table.add_column()
+    
+    # Find synonyms
+    synonym_list = get_synonyms(last_word)
+    
+    if synonym_list:
+        # Format synonyms into a nice display
+        synonyms_text = ", ".join(synonym_list)
+        
+        # Create panel with synonyms
+        panel = Panel(
+            f"[cyan]{synonyms_text}[/cyan]",
+            title=f"[bold yellow]Synonyms for '{last_word}'[/bold yellow]",
+            title_align="left",
+            expand=True
+        )
+        table.add_row(panel)
+    else:
+        # Build not found message
+        not_found_message = f"[grey] No synonyms found for [green]{last_word}[/green] \n [i] Word maybe existing but not present in the database[/i][/grey]"
+        table.add_row(not_found_message)
+    
+    core.table_of_results = table
 
 def use_case(core):
     ...
 def search_by_definition(core):
-    ...
+    """Find words that match a given meaning/definition using Datamuse API"""
+    from kn import search_words_by_meaning
+    from rich.spinner import Spinner
+    from rich.align import Align
+    
+    # Show loading spinner
+    loading_table = Table.grid()
+    loading_table.add_column()
+    loading_table.add_row(Align.center(Spinner("dots", text="Searching for words...")))
+    core.table_of_results = loading_table
+    core.ui_manager.refresh()
+    
+    # Get the search phrase (use the entire current entry text for meaning searches)
+    search_phrase = core.current_entry_text.strip()
+    
+    # Handle empty input
+    if not search_phrase:
+        table = Table(expand=True, show_edge=False)
+        table.add_column()
+        not_found_message = f"[grey]Please enter a definition or meaning to search for words[/grey]"
+        table.add_row(not_found_message)
+        core.table_of_results = table
+        return
+    
+    # Create the results table
+    table = Table(expand=True, show_edge=False)
+    table.add_column()
+    
+    # Search for words using Datamuse API
+    matching_words = search_words_by_meaning(search_phrase)
+    
+    if matching_words:
+        # Format words into a nice display
+        words_text = ", ".join(matching_words)
+        
+        # Create panel with matching words
+        panel = Panel(
+            f"[green]{words_text}[/green]",
+            title=f"[bold yellow]Words matching '{search_phrase}'[/bold yellow]",
+            title_align="left",
+            expand=True
+        )
+        table.add_row(panel)
+    else:
+        # Build not found message
+        not_found_message = f"[grey]No words found matching '[green]{search_phrase}[/green]'\n[i]Try rephrasing your search or use simpler terms[/i][/grey]"
+        table.add_row(not_found_message)
+    
+    core.table_of_results = table
     
 def rhyming_words(core):
-    ...
+    """Find rhyming words and update renderable to display results"""
+    from kn import get_rhyming_words
+    
+    split_entry_text = core.current_entry_text.split(" ")
+    last_word = split_entry_text[-1]
+    
+    if last_word == "" and len(split_entry_text) > 1:
+        last_word = split_entry_text[-2]
+    
+    table = Table(expand=True, show_edge=False)
+    table.add_column()
+    
+    # Find rhyming words
+    rhymes = get_rhyming_words(last_word)
+    
+    if rhymes:
+        # Format rhyming words into a nice display
+        rhymes_text = ", ".join(rhymes)
+        
+        # Create panel with rhyming words
+        panel = Panel(
+            f"[green]{rhymes_text}[/green]",
+            title=f"[bold yellow]Rhyming words for '{last_word}'[/bold yellow]",
+            title_align="left",
+            expand=True
+        )
+        table.add_row(panel)
+    else:
+        # Build not found message
+        not_found_message = f"[grey] No rhyming words found for [green]{last_word}[/green][/grey]"
+        table.add_row(not_found_message)
+    
+    core.table_of_results = table
 
 from util.format_text import truncate_definition , format_definition
 
