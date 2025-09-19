@@ -10,6 +10,7 @@ class AppState(Enum):
     MENU = "menu"
     GAMES = "games"
     QUIZGAME = "quiz_game"
+    GUESS_WORD_GAME = "guess_the_word_game"
     GAMES_SELECTION = "game_selection"
 class DictionaryState(Enum):
     FIND = "find"

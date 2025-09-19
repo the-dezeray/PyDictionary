@@ -50,7 +50,8 @@ class DictionaryRenderer(Renderer):
             else:
                 table = self.show_similar_words(core=core)
             layout["view"].update(Padding(table,pad =(0,10),expand=True))
-        layout["main"].update(Padding(Panel(self.format_text(core)),pad =(0,20)))
+        from rich.spinner import Spinner    
+        layout["main"].update(Padding(Panel(self.format_text(core),border_style="bold blue",),pad =(0,20)))
         layout["suggestion"].update(Padding(self.edit_suggestion(core),pad =(0,20),expand=True))
         return layout
     def show_similar_words(self, core: Core):

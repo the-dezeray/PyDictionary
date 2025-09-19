@@ -9,6 +9,7 @@ from renderers.settings import SettingsRenderer
 from renderers.game_selection import GameSelectionRenderer
 from renderers.quiz_game import QuizGameRenderer
 from rich.layout import Layout
+from renderers.guess_word import GuessWordGameRenderer
 if TYPE_CHECKING:
     from rich.live import Live
 class UIManager:
@@ -29,7 +30,7 @@ class UIManager:
             AppState.GAMES: ... , #GamesRenderer(core=core),
             AppState.GAMES_SELECTION: GameSelectionRenderer(core=core),
             AppState.QUIZGAME: QuizGameRenderer(core=core),
-
+            AppState.GUESS_WORD_GAME: GuessWordGameRenderer(core=core),
         }
     def switch_screen(self, new_screen: AppState):
         """Switch to a different screen"""

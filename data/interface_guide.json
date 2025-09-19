@@ -7,7 +7,7 @@
         
         
  "rhyming_words": "[#363838] [code]RHYMES[/code] a function which return a words rhymes if found \n Parameters : a [blue]single-word[/blue][/#363838]",
-        "find": "[#363838] [code]FIND[/code] a function which return a words meaning if found \n Parameters : a [blue]single-word[/blue][/#363838]",
+        "find": "[blue]find the definition of a word[/blue]",
         "synonym": "[#363838] [code]SYNONYMS[/code] a function which return a words synonyms if found \n Parameters : a [blue]single-word[/blue][/#363838]",
        
         "search_by_definition": "[#363838] [code]SEARCH BY DEFINITION[/code] a function which return a words meaning if found \n Parameters : a [blue]single-word[/blue][/#363838]",

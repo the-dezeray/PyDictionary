@@ -53,7 +53,7 @@ class Core():
         self.table_of_results :Table = None
         self.dictionary_state :DictionaryState = DictionaryState.FIND# Current state in dictionary (e.g., 'find', 'synonym')   
         self.command : callable = lambda: find(self)
-        self.current_screen : AppState= AppState.QUIZGAME
+        self.current_screen : AppState= AppState.DICTIONARY
         self.key_count :int = 0
         self.game_state = GameState()
 

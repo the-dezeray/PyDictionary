@@ -1,6 +1,8 @@
 from rich.table import Table
 from rich.style import Style    
 from typing import TYPE_CHECKING
+from rich.padding import Padding    
+from art import text2art
 from app_state import AppState,DictionaryState  
 if TYPE_CHECKING:
     from core import Core
@@ -101,24 +103,29 @@ def getTable(core:"Core"):
             # Fix the closure issue by capturing the current function value
             selected_function = options[key]
             core.command = selected_function
-            table.add_row(f"[bold blue]{key}[/bold blue]", style=Style(color="blue"))
+     
+            table.add_row(Padding(f"> [bold blue]{key}[/bold blue]"), style=Style(color="blue"))
         else:
+   
             table.add_row(key)
     return table
 
 from renderers.dictionary_services import DictionaryService
 
 def gameSelectionTable(core:"Core"):
+    def switch_to_guess_word_game():
+        """Switch to dictionary screen with optional additional setup"""
+        core.current_screen = AppState.GUESS_WORD_GAME
+        #core.command = core.PRIMARY_KEY_WORD_MAPPING["find"]
+        #core.dictionary_state = DictionaryState.FIND
     def switch_to_quiz():
         """Switch to dictionary screen with optional additional setup"""
         core.current_screen = AppState.QUIZGAME
         #core.command = core.PRIMARY_KEY_WORD_MAPPING["find"]
         #core.dictionary_state = DictionaryState.FIND
     options = {
-        "guess the word": lambda: print("Starting 'Guess the Word'..."),  # Placeholder
-        "guess the definition": lambda: print("Starting 'Guess the Definition'..."),  # Placeholder 
-        "hangman": lambda: print("Starting 'Hangman'..."),  # Placeholder
-        "quiz": switch_to_quiz,
+        "guess the word": switch_to_guess_word_game,  # Placeholder
+        "guess the meaning ": switch_to_quiz,
         "back": lambda: setattr(core, 'current_screen', AppState.MENU)
     }
     table = Table.grid(expand=True)
@@ -132,7 +139,7 @@ def gameSelectionTable(core:"Core"):
             # Fix the closure issue by capturing the current function value
             selected_function = options[key]
             core.command = selected_function
-            table.add_row(f"[bold blue]{key}[/bold blue]", style=Style(color="blue"))
+            table.add_row(f"> [bold blue]{key}[/bold blue]", style=Style(color="blue"))
         else:
             table.add_row(key)
     return table
@@ -149,7 +156,7 @@ def quizTable(core:"Core",options):
             # Fix the closure issue by capturing the current function value
             selected_function = option[list(option.keys())[0]]
             core.command = selected_function
-            table.add_row(Panel(f"[bold blue]{list(option.keys())[0]}[/bold blue]"), style=Style(color="blue"))
+            table.add_row(Panel(f"> [bold blue]{list(option.keys())[0]}[/bold blue]"), style=Style(color="blue"))
         else:
             table.add_row(Panel(f"{list(option.keys())[0]}"))
     return table
