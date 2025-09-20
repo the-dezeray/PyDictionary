@@ -29,7 +29,7 @@ class Core():
             "search_by_definition":lambda: search_by_definition(self),
             "synonym":lambda: synonyms(self),
             "rhyming_words":lambda: rhyming_words(self),
-            "use_case":lambda: use_case(self),
+  
             "games":lambda: use_case(self),
             "help":lambda: help(self),
             "exit":lambda: exit(0)

@@ -43,16 +43,35 @@ class DictionaryRenderer(Renderer):
             (word,meaning) = self.get_word_of_the_day()
             art = text2art(f"{word}",font="tarty4")
             from rich.align import Align
-            layout["view"].update(Padding(pad=(0,10),renderable=Padding(Align(f"[green]{art}[/green] \n\n{meaning}",align="center"))))
+            word = Align(f"[green]{art}[/green]",align="center")
+            meaning = Align(f"[dim green]\n\n{meaning}[/dim green]",align="center")
+            from rich.console import Group
+            a = Group(word,meaning)
+            layout["view"].update(a)
         else:
             if  core.table_of_results:
                 table = core.table_of_results
             else:
                 table = self.show_similar_words(core=core)
             layout["view"].update(Padding(table,pad =(0,10),expand=True))
-        from rich.spinner import Spinner    
-        layout["main"].update(Padding(Panel(self.format_text(core),border_style="bold blue",),pad =(0,20)))
-        layout["suggestion"].update(Padding(self.edit_suggestion(core),pad =(0,20),expand=True))
+        from rich.spinner import Spinner  
+        from app_state import DictionaryState  
+        BORDER_STYLES ={
+            DictionaryState.FIND: "blue",
+            DictionaryState.SYNONYM: "plum2",
+            DictionaryState.RHYMING_WORDS: "sky_blue1",
+
+        }
+        Subtitles = {
+            DictionaryState.FIND: "Definition",
+            DictionaryState.SYNONYM: "Synonyms",
+            DictionaryState.RHYMING_WORDS: "Rhymes",
+        }
+        color = BORDER_STYLES.get(core.dictionary_state, "bold blue")
+        subtitle = Subtitles.get(core.dictionary_state, "Dictionary")
+        layout["main"].update(Padding(Panel(self.format_text(core),border_style=color,subtitle=subtitle,subtitle_align="left"),pad =(0,20)))
+        layout["suggestion"].update("")
+        #layout["suggestion"].update(Padding(f"[dim {color}]{self.edit_suggestion(core)}[/dim {color}]",pad =(0,20),expand=True))
         return layout
     def show_similar_words(self, core: Core):
         """Updates layout to present a list of similar words in search"""

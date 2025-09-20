@@ -22,7 +22,7 @@ class GuessWordGameRenderer(Renderer):
         self.timer_running = False
         self.refresh_interval = 3  # 30 seconds
         self.refresh()
-        self.start_timer()
+
         self.meaning = ""
 
     def start_timer(self):

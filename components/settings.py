@@ -68,11 +68,8 @@ def getTable(core:"Core"):
         core.current_screen = AppState.DICTIONARY
         core.command = core.PRIMARY_KEY_WORD_MAPPING["rhyming_words"]
         core.dictionary_state = DictionaryState.RHYMING_WORDS
-    def switch_to_use_case():
-        """Switch to dictionary screen with optional additional setup"""
-        core.current_screen = AppState.DICTIONARY
-        core.command = core.PRIMARY_KEY_WORD_MAPPING["use_case"]
-        core.dictionary_state = DictionaryState.USE_CASE
+
+
     def switch_to_definitions():
         """Switch to dictionary screen with optional additional setup"""
         core.current_screen = AppState.DICTIONARY
@@ -88,7 +85,7 @@ def getTable(core:"Core"):
         "synonyms": switch_to_synonyms,
         "rhymes": switch_to_rhymes,
         "games": switch_to_games,
-        "use-case": switch_to_use_case,
+
         "help": switch_to_help,
         "exit": lambda: setattr(core, 'running', False)
     }

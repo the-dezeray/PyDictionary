@@ -6,9 +6,9 @@
         "delete ": "used to delete other notes and take a variety of notes",
         
         
- "rhyming_words": "[#363838] [code]RHYMES[/code] a function which return a words rhymes if found \n Parameters : a [blue]single-word[/blue][/#363838]",
+ "rhyming_words": "returns a list of words that rhyme with the input word",
         "find": "[blue]find the definition of a word[/blue]",
-        "synonym": "[#363838] [code]SYNONYMS[/code] a function which return a words synonyms if found \n Parameters : a [blue]single-word[/blue][/#363838]",
+        "synonym": "returns a list of synonyms for the input word",
        
         "search_by_definition": "[#363838] [code]SEARCH BY DEFINITION[/code] a function which return a words meaning if found \n Parameters : a [blue]single-word[/blue][/#363838]",
         "use_case": "[#363838] [code]USE CASE[/code] a function which return a words use cases if found \n Parameters : a [blue]single-word[/blue][/#363838]"
