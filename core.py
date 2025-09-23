@@ -57,7 +57,7 @@ class Core():
         self.current_screen : AppState= AppState.DICTIONARY
         self.key_count :int = 0
         self.game_state = GameState()
-
+        self.instruction = ""
     def navigate(self,direction:str):
         """navigate through menu options"""
         if direction == "up":
@@ -253,6 +253,8 @@ def find(core):
     word, definition = find_word_definition(last_word)
     
     if word and definition:
+        core.current_word = word
+        core.current_definition = definition
         # Format the definition
         formatted_definition = format_definition(definition)
         
@@ -263,5 +265,7 @@ def find(core):
         # Build not found message
         not_found_message = build_not_found_message(last_word)
         table.add_row(not_found_message)
-    
-    core.table_of_results = table
+    from rich.console import Group
+    from rich.align import Align
+    core.instruction = Align.center(Padding("[cyan]space[/cyan]: to activate voice"),vertical="bottom")
+    core.table_of_results = Group(table,core.instruction)

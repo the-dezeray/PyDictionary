@@ -1,6 +1,7 @@
 
 from typing import Callable, Dict, TYPE_CHECKING
 from app_state import AppState
+from ot import activate_voice
 if TYPE_CHECKING:
     from core import Core
     from ui_manager import UIManager
@@ -22,6 +23,7 @@ class InputHandler:
             'Key.tab': lambda: self.ui_manager.switch_screen(AppState.MENU),  # Ignore tab key
             "Key.up": lambda: core.navigate("up"),
             "Key.down": lambda: core.navigate("down"),
+            "Key.right": lambda: activate_voice(core),
         }
     def handle_key(self, key: str) -> None:
         """Process a keyboard event"""

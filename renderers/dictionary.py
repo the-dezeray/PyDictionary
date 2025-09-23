@@ -69,7 +69,8 @@ class DictionaryRenderer(Renderer):
         }
         color = BORDER_STYLES.get(core.dictionary_state, "bold blue")
         subtitle = Subtitles.get(core.dictionary_state, "Dictionary")
-        layout["main"].update(Padding(Panel(self.format_text(core),border_style=color,subtitle=subtitle,subtitle_align="left"),pad =(0,20)))
+        panel = Padding(Panel(self.format_text(core),border_style=color,subtitle=subtitle,subtitle_align="left"),pad =(0,20))
+        layout["main"].update(panel)
         layout["suggestion"].update("")
         #layout["suggestion"].update(Padding(f"[dim {color}]{self.edit_suggestion(core)}[/dim {color}]",pad =(0,20),expand=True))
         return layout
