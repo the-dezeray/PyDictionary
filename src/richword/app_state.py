@@ -1,8 +1,8 @@
 from enum import Enum
 from dataclasses import dataclass, field
 from typing import List, Optional, TYPE_CHECKING    
-from rich.layout import Layout
-from abc import ABC, abstractmethod
+
+
 class AppState(Enum):
     DICTIONARY = "dictionary"
     SETTINGS = "settings"

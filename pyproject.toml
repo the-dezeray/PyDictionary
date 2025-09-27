@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pydictionary"
+name = "richword"
 version = "0.1.0"
 description = "A feature-rich terminal dictionary application with pronunciation, synonyms, and word games"
 readme = "README.md"
@@ -52,7 +52,7 @@ Repository = "https://github.com/the-dezeray/PyDictionary.git"
 "Bug Tracker" = "https://github.com/the-dezeray/PyDictionary/issues"
 
 [project.scripts]
-pydictionary = "pyDictionary.main:main"
+richword = "richword.main:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/pyDictionary"]
+packages = ["src/richword"]

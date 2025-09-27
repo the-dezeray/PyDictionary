@@ -11,36 +11,37 @@ from .renderers.quiz_game import QuizGameRenderer
 from rich.layout import Layout
 from .renderers.guess_word import GuessWordGameRenderer
 if TYPE_CHECKING:
+    from .core import Core
     from rich.live import Live
 class UIManager:
     """Manages UI state and rendering coordination"""
     
-    def __init__(self,core):
-        self.core = core
-        core.ui_manager = self
-        self.live : "Live|None" 
-   
+    def __init__(self,ui_state:"Core"):
+       
+        ui_state.ui_manager = self
+        self.live : "Live" 
+        self.ui_state = ui_state
 
         # Create renderers for each screen
         self.renderers: Dict[AppState, Renderer] = {
-            AppState.DICTIONARY: DictionaryRenderer(core=core),
-            AppState.SETTINGS: ... , #SettingsRenderer(core=core),
-            AppState.HELP: HelpRenderer(core=core),
-            AppState.MENU:  MenuRenderer(core=core),
-            AppState.GAMES: ... , #GamesRenderer(core=core),
-            AppState.GAMES_SELECTION: GameSelectionRenderer(core=core),
-            AppState.QUIZGAME: QuizGameRenderer(core=core),
-            AppState.GUESS_WORD_GAME: GuessWordGameRenderer(core=core),
+            AppState.DICTIONARY: DictionaryRenderer(ui_state),
+            AppState.SETTINGS: SettingsRenderer(ui_state),
+            AppState.HELP: HelpRenderer(ui_state),
+            AppState.MENU:  MenuRenderer(ui_state),
+            AppState.GAMES:  QuizGameRenderer(ui_state),
+            AppState.GAMES_SELECTION: GameSelectionRenderer(ui_state),
+            AppState.QUIZGAME: QuizGameRenderer(ui_state),
+            AppState.GUESS_WORD_GAME: GuessWordGameRenderer(ui_state),
         }
     def switch_screen(self, new_screen: AppState):
         """Switch to a different screen"""
         if new_screen in self.renderers:
-            self.core.current_screen = new_screen
+            self.ui_state.current_screen = new_screen
             self.refresh()
     def get_current_layout(self) -> Layout:
         """Get the layout for the current screen"""
-        renderer = self.renderers[self.core.current_screen]
-        return renderer.update(self.core)
+        renderer = self.renderers[self.ui_state.current_screen]
+        return renderer.update(self.ui_state)
     def refresh(self):
         """Refresh the UI"""
 

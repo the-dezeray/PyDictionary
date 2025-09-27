@@ -5,11 +5,11 @@ from rich.layout import Layout
 from rich.panel import Panel
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from core import Core
+    from ..core import Core
 class HelpRenderer(Renderer):
     """Renders the help screen"""
-    
-    def update(self, core: "Core") -> Layout:
+
+    def update(self, ui_state: "Core") -> Layout:
         layout = Layout(name="root")
         layout.split(Layout(name="main"))
         

@@ -12,34 +12,34 @@ from rich.spinner import Spinner
 from ..app_state import DictionaryState  
 from rich.console import Group
 class DictionaryRenderer(Renderer):
-    def __init__(self, core):
-        super().__init__(core)
-        self.core = core
+    def __init__(self, ui_state: Core):
+        super().__init__(ui_state)
+        self.ui_state = ui_state
         self.name = "DictionaryLayout"
         self.f = 0
         
         # Initialize static dictionary service
         DictionaryService.initialize()
         self.suggestion = "Enter a command"
-    def format_text(self,core: Core):
+    def format_text(self,ui_state: Core):
         """formats the current user-input to highlight primary keys tags and text"""
 
-        string_list =core.current_entry_text.split(" ")
+        string_list =ui_state.current_entry_text.split(" ")
         for index ,i in enumerate(string_list):
-            if i in self.core.PRIMARY_KEY_WORD_MAPPING:
+            if i in self.ui_state.PRIMARY_KEY_WORD_MAPPING:
                 string_list[index] = "[code ] "  + i.upper() + "[/code]"
-            if i in self.core.PRIMARY_KEY_WORD_MAPPING:
+            if i in self.ui_state.PRIMARY_KEY_WORD_MAPPING:
                 string_list[index] = "[blue] "  + i + ": [/blue]"
         formated_entry_text = " ".join(string_list)
         return formated_entry_text
-    def edit_suggestion(self, core: Core):
+    def edit_suggestion(self, ui_state: Core):
         """Updates the suggestion renderable-object as input is updated"""
-        suggestion = DictionaryService.get_suggestion(core.dictionary_state.value)
+        suggestion = DictionaryService.get_suggestion(ui_state.dictionary_state.value)
         return suggestion
-    def update(self,core: Core):
+    def update(self, ui_state: Core):
 
         layout = main_layout()
-        if core.key_count == 0:
+        if ui_state.key_count == 0:
          
             (word,meaning) = self.get_word_of_the_day()
             art = text2art(f"{word}",font="tarty4")
@@ -50,17 +50,17 @@ class DictionaryRenderer(Renderer):
             a = Group(word,meaning)
             layout["view"].update(a)
         else:
-            if  core.table_of_results:
-                table = core.table_of_results
-                if core.voice_activate:
-                    core.instruction = "redy row"
+            if  ui_state.table_of_results:
+                table = ui_state.table_of_results
+                if ui_state.voice_activate:
+                    ui_state.instruction = "redy row"
                 else:
-                    core.instruction = "spcae for voice"
+                    ui_state.instruction = "spcae for voice"
             else:
-                table = self.show_similar_words(core=core)
-                core.instruction = ""
+                table = self.show_similar_words(ui_state)
+                ui_state.instruction = ""
             from rich.console import Group
-            bb= Group(table,core.instruction)
+            bb= Group(table,ui_state.instruction)
             layout["view"].update(Padding(bb,pad =(0,10),expand=True))
 
         BORDER_STYLES ={
@@ -74,16 +74,16 @@ class DictionaryRenderer(Renderer):
             DictionaryState.SYNONYM: "Synonyms",
             DictionaryState.RHYMING_WORDS: "Rhymes",
         }
-        color = BORDER_STYLES.get(core.dictionary_state, "bold blue")
-        subtitle = Subtitles.get(core.dictionary_state, "Dictionary")
-        panel = Padding(Panel(self.format_text(core),border_style=color,subtitle=subtitle,subtitle_align="left"),pad =(0,20))
+        color = BORDER_STYLES.get(ui_state.dictionary_state, "bold blue")
+        subtitle = Subtitles.get(ui_state.dictionary_state, "Dictionary")
+        panel = Padding(Panel(self.format_text(ui_state),border_style=color,subtitle=subtitle,subtitle_align="left"),pad =(0,20))
         layout["main"].update(panel)
         layout["suggestion"].update("")
         #layout["suggestion"].update(Padding(f"[dim {color}]{self.edit_suggestion(core)}[/dim {color}]",pad =(0,20),expand=True))
         return layout
-    def show_similar_words(self, core: Core):
+    def show_similar_words(self,ui_state: Core):
         """Updates layout to present a list of similar words in search"""
-        split_entry_text = core.current_entry_text.split(" ")
+        split_entry_text = ui_state.current_entry_text.split(" ")
         last_word = split_entry_text[-1] or (
             split_entry_text[-2] if len(split_entry_text) > 1 else ""
         )
@@ -94,10 +94,10 @@ class DictionaryRenderer(Renderer):
         # Get similar words using the dictionary service
         matches = DictionaryService.find_similar_words(
             last_word, 
-            max_results=core.max_displayed_similar_words
+            max_results=ui_state.max_displayed_similar_words
         )
 
-        for index, key in enumerate(matches[:core.max_displayed_similar_words]):
+        for index, key in enumerate(matches[:ui_state.max_displayed_similar_words]):
             if index == 0 and key == last_word:
                 table.add_row(f"[bold blue]> {key}[/bold blue]", style=Style(color="blue"))
             else:
@@ -106,13 +106,13 @@ class DictionaryRenderer(Renderer):
     def get_word_of_the_day(self):
         """Returns a random word from the lexicon"""
         return DictionaryService.get_word_of_the_day()
-    def contains_primary_key(self,core:Core):
+    def contains_primary_key(self,ui_state:Core):
         """checks entry box for primary key 
         Returns:
             bool: True if present 
         """
-        split_entry_text = core.current_entry_text.split(" ")
+        split_entry_text = ui_state.current_entry_text.split(" ")
         for i in split_entry_text:
-            if i in self.core.PRIMARY_KEY_WORD_MAPPING:
+            if i in self.ui_state.PRIMARY_KEY_WORD_MAPPING:
                 return True
         return False
