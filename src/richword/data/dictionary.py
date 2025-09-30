@@ -1,4 +1,4 @@
-from .renderers.dictionary_services import DictionaryService
+from ..renderers.dictionary_services import DictionaryService
 
 # Initialize the static dictionary service
 DictionaryService.initialize()

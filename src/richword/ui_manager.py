@@ -11,12 +11,12 @@ from .renderers.quiz_game import QuizGameRenderer
 from rich.layout import Layout
 from .renderers.guess_word import GuessWordGameRenderer
 if TYPE_CHECKING:
-    from .core import Core
+    from .ui_state import UiState
     from rich.live import Live
 class UIManager:
     """Manages UI state and rendering coordination"""
     
-    def __init__(self,ui_state:"Core"):
+    def __init__(self,ui_state:"UiState"):
        
         ui_state.ui_manager = self
         self.live : "Live" 

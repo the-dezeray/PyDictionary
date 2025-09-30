@@ -1,18 +1,21 @@
 """Command handlers for different dictionary operations - Refactored for code reuse"""
 
 from rich.panel import Panel
-from .text_utils import extract_last_word
-from .core import Core
+from ..util.text_utils import extract_last_word
+
 from rich.panel import Panel
-from .util.text_to_speach import text_to_speech
-from .components.display_builders import (
+from ..util.text_to_speach import text_to_speech
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..ui_state import UiState
+from ..components.display_builders import (
     build_definition_panel, 
     build_not_found_message, 
     create_results_table,
     create_loading_table
 )
-from .dictionary import dictionary_service
-from .util.format_text import format_definition
+from ..data.dictionary import dictionary_service
+from ..util.format_text import format_definition
 from typing import Any, Optional, List, Callable, Tuple
 
 
@@ -142,7 +145,9 @@ def find(ui_state: Any):
 
 def synonyms(ui_state: Any):
     """Find synonyms for a word and update renderable to display results"""
-    from .kn import get_synonyms
+    def optimized_get_synonyms(word: str) -> List[str]:
+        from ..util.nltk_handler import get_synonyms
+        return get_synonyms(word)
     
     def format_synonyms(search_term: str, results: List[str]) -> Tuple[Optional[Panel], Optional[str]]:
         return _format_list_results(
@@ -154,7 +159,7 @@ def synonyms(ui_state: Any):
     
     _execute_search_command(
         ui_state,
-        get_synonyms,
+        optimized_get_synonyms,
         format_synonyms,
         "Finding Synonyms..."
     )
@@ -162,7 +167,7 @@ def synonyms(ui_state: Any):
 
 def search_by_definition(ui_state: Any):
     """Find words that match a given meaning/definition using Datamuse API"""
-    from .kn import search_words_by_meaning
+    from ..util.nltk_handler import search_words_by_meaning
     
     def format_meaning_results(search_term: str, results: List[str]) -> Tuple[Optional[Panel], Optional[str]]:
         if results:
@@ -185,7 +190,7 @@ def search_by_definition(ui_state: Any):
 
 def rhyming_words(ui_state: Any):
     """Find rhyming words and update renderable to display results"""
-    from .kn import get_rhyming_words
+    from ..util.nltk_handler import get_rhyming_words
     
     def format_rhymes(search_term: str, results: List[str]) -> Tuple[Optional[Panel], Optional[str]]:
         return _format_list_results(search_term, results, "Rhyming words")
@@ -211,7 +216,7 @@ def help_command(core: Any):
     """Help command placeholder"""
     ...
 
-def activate_voice(ui_state:"Core"):
+def activate_voice(ui_state:"UiState"):
     ui_state.instruction = Panel("Voice Activated\n [cyan]|||||[/cyan]")
     word = ui_state.current_word
     definition = ui_state.current_definition

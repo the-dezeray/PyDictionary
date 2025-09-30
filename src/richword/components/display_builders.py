@@ -3,7 +3,7 @@
 from rich.table import Table
 from rich.panel import Panel
 from ..util.format_text import truncate_definition
-from ..text_utils import count_words_in_definition
+from ..util.text_utils import count_words_in_definition
 from typing import Any
 
 

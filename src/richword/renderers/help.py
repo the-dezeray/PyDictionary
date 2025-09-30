@@ -1,15 +1,16 @@
 
 from .abtract_render import Renderer
 from rich.padding import Padding
+from rich.align import Align
 from rich.layout import Layout
 from rich.panel import Panel
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from ..core import Core
+    from ..ui_state import UiState
 class HelpRenderer(Renderer):
     """Renders the help screen"""
 
-    def update(self, ui_state: "Core") -> Layout:
+    def update(self, ui_state: "UiState") -> Layout:
         layout = Layout(name="root")
         layout.split(Layout(name="main"))
         
@@ -35,10 +36,9 @@ class HelpRenderer(Renderer):
         """
         
         layout["main"].update(
-            Padding(
-                Panel(help_text, title="[bold]Help[/bold]", border_style="green"),
-                pad=(2, 10)
-            )
+
+           Align.center(Panel(help_text, title="[bold]Help[/bold]", border_style="green",expand=False)),
+
         )
         
         return layout

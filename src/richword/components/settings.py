@@ -5,10 +5,10 @@ from rich.padding import Padding
 
 from ..app_state import AppState,DictionaryState  
 if TYPE_CHECKING:
-    from ..core import Core
+    from ..ui_state import UiState
 
 
-def switch_to_dictionary_screen(ui_state: "Core"):
+def switch_to_dictionary_screen(ui_state: "UiState"):
     """Custom function to switch to dictionary screen with additional setup"""
     ui_state.current_screen = AppState.DICTIONARY
     # Add any additional functionality here
@@ -21,35 +21,8 @@ def switch_to_dictionary_screen(ui_state: "Core"):
     print("Switching to dictionary screen...")  # Example additional functionality
 
 
-def gameSelectionTable(ui_state:"Core"):
-    def switch_to_quiz():
-        """Switch to dictionary screen with optional additional setup"""
-        ui_state.current_screen = AppState.QUIZGAME
-        #ui_state.command = ui_state.PRIMARY_KEY_WORD_MAPPING["find"]
-        #ui_state.dictionary_state = DictionaryState.FIND
-    options = {
-        "guess the word": lambda: print("Starting 'Guess the Word'..."),  # Placeholder
-        "guess the definition": lambda: print("Starting 'Guess the Definition'..."),  # Placeholder 
-        "hangman": lambda: print("Starting 'Hangman'..."),  # Placeholder
-        "quiz": switch_to_quiz,
-        "back": lambda: setattr(ui_state, 'current_screen', AppState.MENU)
-    }
-    table = Table.grid(expand=True)
-    ui_state.selected = ui_state.selected % len(options)
-    
-    # Get the keys as a list to access by index
-    option_keys = list(options.keys())
-    
-    for index, key in enumerate(option_keys):
-        if index == ui_state.selected:
-            # Fix the closure issue by capturing the current function value
-            selected_function = options[key]
-            ui_state.command = selected_function
-            table.add_row(f"[bold blue]{key}[/bold blue]", style=Style(color="blue"))
-        else:
-            table.add_row(key)
-    return table
-def getTable(ui_state:"Core"):
+
+def getTable(ui_state:"UiState"):
     """returns the current table object"""
     # Define all options as callable functions
 
@@ -110,7 +83,7 @@ def getTable(ui_state:"Core"):
 
 from ..renderers.dictionary_services import DictionaryService
 
-def gameSelectionTable(ui_state:"Core"):
+def gameSelectionTable(ui_state:"UiState"):
     def switch_to_guess_word_game():
         """Switch to dictionary screen with optional additional setup"""
         ui_state.current_screen = AppState.GUESS_WORD_GAME
@@ -141,7 +114,7 @@ def gameSelectionTable(ui_state:"Core"):
         else:
             table.add_row(key)
     return table
-def quizTable(ui_state:"Core",options):
+def quizTable(ui_state:"UiState",options):
 
     table = Table.grid(expand=True)
     ui_state.selected = ui_state.selected % len(options)
@@ -154,7 +127,7 @@ def quizTable(ui_state:"Core",options):
             # Fix the closure issue by capturing the current function value
             selected_function = option[list(option.keys())[0]]
             ui_state.command = selected_function
-            table.add_row(Panel(f"> [bold blue]{list(option.keys())[0]}[/bold blue]"), style=Style(color="blue"))
+            table.add_row(Panel(f"> [bold blue]{list(option.keys())[0]}[/bold blue]",expand=False), style=Style(color="blue"))
         else:
-            table.add_row(Panel(f"{list(option.keys())[0]}"))
+            table.add_row(Padding(f"{list(option.keys())[0]}"))
     return table

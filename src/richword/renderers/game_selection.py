@@ -6,9 +6,9 @@ from rich.panel import Panel
 from ..components.settings import gameSelectionTable
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from ..core import Core
+    from ..ui_state import UiState
 class GameSelectionRenderer(Renderer):
-    def __init__(self, ui_state: "Core"):
+    def __init__(self, ui_state: "UiState"):
         super().__init__(ui_state)
         self.ui_state = ui_state
         self.name = "MenuLayout"

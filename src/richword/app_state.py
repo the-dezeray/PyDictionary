@@ -1,7 +1,5 @@
 from enum import Enum
-from dataclasses import dataclass, field
-from typing import List, Optional, TYPE_CHECKING    
-
+from dataclasses import dataclass
 
 class AppState(Enum):
     DICTIONARY = "dictionary"

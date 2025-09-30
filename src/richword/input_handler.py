@@ -1,17 +1,17 @@
 
 from typing import Callable, Dict, TYPE_CHECKING
 from .app_state import AppState
-from rich.table import Table
-from .nav import navigate
+
+from .util.nav import navigate
 #from .ot import activate_voice
 if TYPE_CHECKING:
-    from .core import Core
+    from .ui_state import UiState
     from .ui_manager import UIManager
 class InputHandler:
     """Handles keyboard input and translates it to UI actions."""
 
 
-    def __init__(self, ui_state:"Core", ui_manager:"UIManager"):
+    def __init__(self, ui_state:"UiState", ui_manager:"UIManager"):
         self.ui_state = ui_state
         self.ui_manager = ui_manager
 
@@ -20,11 +20,12 @@ class InputHandler:
             #'Key.up': self.ui_manager.navigate_up,
             #'Key.down': self.ui_manager.navigate_down,
             #'Key.esc': lambda: self.ui_manager.switch_screen(AppState.SETTINGS),
-            'Key.enter': self._handle_enter,
+            'Key.enter': self._handle_enter,    
             'Key.backspace': self._handle_backspace,
             'Key.tab': lambda: self.ui_manager.switch_screen(AppState.MENU),  # Ignore tab key
             "Key.up": lambda: navigate(ui_state,"up"),
             "Key.down": lambda: navigate(ui_state,"down"),
+            "Key.esc": lambda: setattr(ui_state, 'running', False),  # Graceful exit
             #"Key.down": lambda: activate_voice(self.core),
         }
     def handle_key(self, key: str) -> None:
@@ -58,6 +59,8 @@ class InputHandler:
             self.run_command()
             self.ui_state.current_entry_text = ""
             self.ui_state.formated_entry_text = ""
+            
+
     def run_command(self):
         """runs user command """
         

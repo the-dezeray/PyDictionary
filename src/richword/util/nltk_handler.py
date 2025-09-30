@@ -1,15 +1,102 @@
-from nltk.corpus import wordnet
 import requests
 import json
+import os
+import threading
 
-# Make sure you download WordNet once (can be cached offline)
-import nltk
-nltk.download('wordnet')
+# Global variables for threaded initialization
+_nltk_initialized = False
+_nltk_init_lock = threading.Lock()
+_wordnet = None
+_nltk = None
+
+# Get the directory where this file is located
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Navigate to the data directory (assuming it's at src/richword/data)
+data_dir = os.path.join(os.path.dirname(current_dir), "data", "nltk_data")
+
+
+def _check_wordnet_exists():
+    """Check if wordnet data exists by looking for the wordnet zip or directory"""
+    wordnet_zip_path = os.path.join(data_dir, "corpora", "wordnet.zip")
+    wordnet_dir_path = os.path.join(data_dir, "corpora", "wordnet")
+    
+    return os.path.exists(wordnet_zip_path) or os.path.exists(wordnet_dir_path)
+
+
+def _download_wordnet():
+    """Download wordnet data if it doesn't exist"""
+    import nltk
+    
+    if not _check_wordnet_exists():
+        # Create the data directory if it doesn't exist
+        os.makedirs(data_dir, exist_ok=True)
+        print("Downloading WordNet data...")
+        nltk.download("wordnet", download_dir=data_dir)
+        print("WordNet data downloaded successfully!")
+
+
+def _initialize_nltk_threaded():
+    """Initialize NLTK in a separate thread"""
+    global _nltk_initialized, _wordnet, _nltk
+    
+    with _nltk_init_lock:
+        if not _nltk_initialized:
+            print("Initializing NLTK...")
+            import nltk
+            from nltk.corpus import wordnet
+            
+            _nltk = nltk
+            _wordnet = wordnet
+            
+            # Add the data directory to NLTK's data path
+            if data_dir not in nltk.data.path:
+                nltk.data.path.append(data_dir)
+            
+            _nltk_initialized = True
+            print("NLTK initialization complete!")
+
+
+def first_init():
+    """
+    Initialize NLTK and WordNet data before the program runs.
+    Downloads WordNet if not present and imports NLTK in a separate thread.
+    """
+    # First, do a quick import of nltk to check if wordnet exists
+    import nltk
+    
+    # Add the data directory to NLTK's data path
+    if data_dir not in nltk.data.path:
+        nltk.data.path.append(data_dir)
+    
+    # Check if wordnet data exists, download if not
+    try:
+        nltk.data.find("corpora/wordnet")
+        print("WordNet data found!")
+    except LookupError:
+        _download_wordnet()
+    
+    # Start NLTK initialization in a separate thread
+    init_thread = threading.Thread(target=_initialize_nltk_threaded, daemon=True)
+    init_thread.start()
+    
+    return init_thread
+
+
+def _wait_for_nltk_init():
+    """Wait for NLTK initialization to complete"""
+    while not _nltk_initialized:
+        threading.Event().wait(0.1)  # Small delay to prevent busy waiting
 
 
 def get_synonyms(word):
+    """Get synonyms for a word using WordNet"""
+    _wait_for_nltk_init()  # Ensure NLTK is initialized
+    
+    if _wordnet is None:
+        return []
+    
     synonyms = set()
-    for synset in wordnet.synsets(word):
+    for synset in _wordnet.synsets(word):
         for lemma in synset.lemmas():
             synonyms.add(lemma.name().replace('_', ' '))
     return list(synonyms)
@@ -17,11 +104,16 @@ def get_synonyms(word):
 
 def get_rhyming_words(word):
     """Get words that rhyme with the given word using phonetic similarity"""
+    _wait_for_nltk_init()  # Ensure NLTK is initialized
+    
+    if _wordnet is None:
+        return []
+    
     rhymes = set()
     
     # Get all words from WordNet
     all_words = set()
-    for synset in wordnet.all_synsets():
+    for synset in _wordnet.all_synsets():
         for lemma in synset.lemmas():
             all_words.add(lemma.name().lower())
     

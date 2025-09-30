@@ -1,95 +1,34 @@
-from .abtract_render import Renderer
-from ..components.layouts import menu_layout
-from rich.layout import Layout
-
 import random
-import threading
-import time
-from ..components.settings import quizTable
-from  .dictionary_services import DictionaryService
-from typing import TYPE_CHECKING,Callable
+from typing import TYPE_CHECKING
+
+from .base_game_renderer import BaseGameRenderer
+from .dictionary_services import DictionaryService
+
 if TYPE_CHECKING:
-    from ..core import Core
-class GuessWordGameRenderer(Renderer):
-    def __init__(self,ui_state:"Core") -> None:
+    from ..ui_state import UiState
+
+
+class GuessWordGameRenderer(BaseGameRenderer):
+    def __init__(self, ui_state: "UiState") -> None:
         super().__init__(ui_state)
-        self.ui_state = ui_state
-        self.name = "MenuLayout"
-        self.iscorrect = None
+        self.name = "GuessWordGame"
         self.random_word = ""
-        self.options : list[dict[str, Callable]] = []
-        self.timer_thread = None
-        self.timer_running = False
-        self.refresh_interval = 3  # 30 seconds
-        self.refresh()
+        self.score = 0
+        self.word_count =0
+        self.words_per_game = 12
 
-        self.meaning = ""
 
-    def start_timer(self):
-        """Start the timer thread for auto-refresh"""
-        if self.timer_thread is None or not self.timer_thread.is_alive():
-            self.timer_running = True
-            self.timer_thread = threading.Thread(target=self._timer_loop, daemon=True)
-            self.timer_thread.start()
-
-    def stop_timer(self):
-        """Stop the timer thread"""
-        self.timer_running = False
-        if self.timer_thread and self.timer_thread.is_alive():
-            self.timer_thread.join()
-        
-    def _timer_loop(self):
-        """Timer loop that runs in a separate thread"""
-        while self.timer_running:
-            time.sleep(self.refresh_interval)
-            if self.timer_running:
-                self.refresh()
-                # Call UI manager refresh to update the display
-                if self.ui_state.ui_manager:
-                    self.ui_state.ui_manager.refresh()
-    def wrong_answer(self):
-        self.ui_state.game_state.score -= 1
-        self.iscorrect = False
-        self.start_timer()
-        # Immediately update the UI to show the wrong answer feedback
-        if self.ui_state.ui_manager:
-            self.ui_state.ui_manager.refresh()
-            
-    def correct_answer(self):
-        self.ui_state.game_state.score += 1
-        self.answer_status = "correct"
-        self.iscorrect = True
-        self.start_timer()
-        # Immediately update the UI to show the correct answer feedback
-        if self.ui_state.ui_manager:
-            self.ui_state.ui_manager.refresh()
     def refresh(self):
+        """Refresh game data with a new word and meaning"""
         self.random_word, self.meaning = DictionaryService.get_word_of_the_day()
         random_index = random.randint(0, 3)
         # Get multiple random words for options
-        random_meanings = [DictionaryService.get_word_of_the_day()[0] for _ in range(3)]
-        self.options = [{word:self.wrong_answer} for word  in random_meanings]
-        self.options.insert(random_index,{self.random_word:self.correct_answer})
+        random_words = [DictionaryService.get_word_of_the_day()[0] for _ in range(3)]
+        self.options = [{word: self.wrong_answer} for word in random_words]
+        self.options.insert(random_index, {self.random_word: self.correct_answer})
         # Reset the answer status when refreshing
         self.iscorrect = None
 
-    def update(self,ui_state:"Core")->Layout:
-        layout = menu_layout()
-        from rich.console import Group
-        from rich.align import Align
-        from rich.padding import Padding
-
-        word = Align(renderable= Padding(self.meaning),align="center", pad=(0, 20))
-        if self.iscorrect is None:
-            flag = "[yellow]Select an answer[/yellow]"
-        elif self.iscorrect:
-            flag = "[green]Correct![/green]"
-        else:
-            flag = "[red]Wrong![/red]"
-        renderable = Group(word,quizTable(self.ui_state,options=self.options),  Align(flag,align="center"))
-        layout["main"].update(renderable=renderable)
-        return layout
-
-    def __del__(self):
-        """Cleanup when the object is destroyed"""
-        self.stop_timer()
+    def get_main_content(self) -> str:
+        """Get the meaning to display as the main content"""
+        return self.meaning

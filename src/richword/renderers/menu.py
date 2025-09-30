@@ -1,5 +1,5 @@
 from .abtract_render import Renderer
-from ..components.layouts import settings_layout,menu_layout
+from ..components.layouts import menu_layout
 from rich.layout import Layout
 from rich.align import Align
 from rich.panel import Panel

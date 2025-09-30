@@ -5,14 +5,14 @@ from rich.padding import Padding
 from rich.align import Align
 
 from .app_state import AppState, DictionaryState, GameState
-from .command_registry import get_command_mapping
-from . import commands
+from .logic.command_registry import get_command_mapping
+from .logic import commands
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from .ui_manager import UIManager
-class Core():
+class UiState():
     """process keyboard inputs/commands and updating layout appearance""" 
 
     def __init__(self) -> None:

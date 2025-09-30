@@ -1,8 +1,7 @@
 from rich.layout import Layout
-from rich.padding import Padding
-from rich.console import Console,Group
+
 from rich.spinner import Spinner
-from .settings import getTable
+
 from rich.align import Align
 def main_layout()->Layout:
     """return a structured Layout object

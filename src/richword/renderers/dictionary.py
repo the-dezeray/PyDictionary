@@ -3,16 +3,19 @@ from art import text2art
 from rich.panel import Panel
 from rich.padding import Padding
 from  ..components.layouts import main_layout
-from ..core import Core
+
 from rich.table import Table
 from rich.style import Style
 from .abtract_render import Renderer
 from .dictionary_services import DictionaryService
-from rich.spinner import Spinner  
+
 from ..app_state import DictionaryState  
-from rich.console import Group
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..ui_state import UiState
 class DictionaryRenderer(Renderer):
-    def __init__(self, ui_state: Core):
+    def __init__(self, ui_state: "UiState"):
         super().__init__(ui_state)
         self.ui_state = ui_state
         self.name = "DictionaryLayout"
@@ -21,7 +24,7 @@ class DictionaryRenderer(Renderer):
         # Initialize static dictionary service
         DictionaryService.initialize()
         self.suggestion = "Enter a command"
-    def format_text(self,ui_state: Core):
+    def format_text(self,ui_state: "UiState"):
         """formats the current user-input to highlight primary keys tags and text"""
 
         string_list =ui_state.current_entry_text.split(" ")
@@ -32,11 +35,11 @@ class DictionaryRenderer(Renderer):
                 string_list[index] = "[blue] "  + i + ": [/blue]"
         formated_entry_text = " ".join(string_list)
         return formated_entry_text
-    def edit_suggestion(self, ui_state: Core):
+    def edit_suggestion(self, ui_state: "UiState"):
         """Updates the suggestion renderable-object as input is updated"""
         suggestion = DictionaryService.get_suggestion(ui_state.dictionary_state.value)
         return suggestion
-    def update(self, ui_state: Core):
+    def update(self, ui_state: "UiState"):
 
         layout = main_layout()
         if ui_state.key_count == 0:
@@ -81,7 +84,7 @@ class DictionaryRenderer(Renderer):
         layout["suggestion"].update("")
         #layout["suggestion"].update(Padding(f"[dim {color}]{self.edit_suggestion(core)}[/dim {color}]",pad =(0,20),expand=True))
         return layout
-    def show_similar_words(self,ui_state: Core):
+    def show_similar_words(self,ui_state: "UiState"):
         """Updates layout to present a list of similar words in search"""
         split_entry_text = ui_state.current_entry_text.split(" ")
         last_word = split_entry_text[-1] or (
@@ -106,7 +109,7 @@ class DictionaryRenderer(Renderer):
     def get_word_of_the_day(self):
         """Returns a random word from the lexicon"""
         return DictionaryService.get_word_of_the_day()
-    def contains_primary_key(self,ui_state:Core):
+    def contains_primary_key(self,ui_state:"UiState"):
         """checks entry box for primary key 
         Returns:
             bool: True if present 
