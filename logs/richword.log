@@ -1,0 +1,14 @@
+2025-10-01 14:37:36,679 - richword.richword.main - INFO - main:17 - Starting RichWord application
+2025-10-01 14:37:36,680 - richword.richword.main - INFO - main:21 - Starting NLTK initialization...
+2025-10-01 14:37:36,680 - richword.richword.util.nltk_handler - INFO - first_init:83 - Starting NLTK and WordNet initialization process
+2025-10-01 14:37:47,843 - richword.richword.util.nltk_handler - WARNING - first_init:98 - WordNet data not found, downloading...
+2025-10-01 14:37:47,847 - richword.richword.util.nltk_handler - INFO - _initialize_nltk_threaded:54 - Starting NLTK initialization in background thread
+2025-10-01 14:37:47,849 - richword.richword.util.nltk_handler - INFO - _initialize_nltk_threaded:69 - NLTK initialization completed successfully
+2025-10-01 14:37:48,197 - richword.richword.main - INFO - main:39 - Starting main application loop
+2025-10-01 15:34:02,834 - richword.richword.main - INFO - main:17 - Starting RichWord application
+2025-10-01 15:34:02,835 - richword.richword.main - INFO - main:21 - Starting NLTK initialization...
+2025-10-01 15:34:02,837 - richword.richword.util.nltk_handler - INFO - first_init:83 - Starting NLTK and WordNet initialization process
+2025-10-01 15:34:04,386 - richword.richword.util.nltk_handler - WARNING - first_init:98 - WordNet data not found, downloading...
+2025-10-01 15:34:04,653 - richword.richword.util.nltk_handler - INFO - _initialize_nltk_threaded:54 - Starting NLTK initialization in background thread
+2025-10-01 15:34:04,781 - richword.richword.util.nltk_handler - INFO - _initialize_nltk_threaded:69 - NLTK initialization completed successfully
+2025-10-01 15:34:05,443 - richword.richword.main - INFO - main:39 - Starting main application loop

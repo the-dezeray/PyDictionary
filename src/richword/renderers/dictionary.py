@@ -3,7 +3,7 @@ from art import text2art
 from rich.panel import Panel
 from rich.padding import Padding
 from  ..components.layouts import main_layout
-
+from ..util.logger import get_logger
 from rich.table import Table
 from rich.style import Style
 from .abtract_render import Renderer
@@ -14,16 +14,21 @@ from ..app_state import DictionaryState
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..ui_state import UiState
+
+logger = get_logger(__name__)
 class DictionaryRenderer(Renderer):
     def __init__(self, ui_state: "UiState"):
+        logger.debug("Initializing DictionaryRenderer")
         super().__init__(ui_state)
         self.ui_state = ui_state
         self.name = "DictionaryLayout"
         self.f = 0
         
         # Initialize static dictionary service
+        logger.debug("Initializing dictionary service")
         DictionaryService.initialize()
         self.suggestion = "Enter a command"
+        logger.debug("DictionaryRenderer initialization complete")
     def format_text(self,ui_state: "UiState"):
         """formats the current user-input to highlight primary keys tags and text"""
 

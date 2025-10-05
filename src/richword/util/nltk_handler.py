@@ -2,6 +2,9 @@ import requests
 import json
 import os
 import threading
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 # Global variables for threaded initialization
 _nltk_initialized = False
@@ -20,7 +23,9 @@ def _check_wordnet_exists():
     wordnet_zip_path = os.path.join(data_dir, "corpora", "wordnet.zip")
     wordnet_dir_path = os.path.join(data_dir, "corpora", "wordnet")
     
-    return os.path.exists(wordnet_zip_path) or os.path.exists(wordnet_dir_path)
+    exists = os.path.exists(wordnet_zip_path) or os.path.exists(wordnet_dir_path)
+    logger.debug(f"WordNet data exists: {exists} (checked {wordnet_zip_path} and {wordnet_dir_path})")
+    return exists
 
 
 def _download_wordnet():
@@ -28,11 +33,16 @@ def _download_wordnet():
     import nltk
     
     if not _check_wordnet_exists():
+        logger.info("WordNet data not found, downloading...")
         # Create the data directory if it doesn't exist
         os.makedirs(data_dir, exist_ok=True)
+        logger.debug(f"Created data directory: {data_dir}")
         print("Downloading WordNet data...")
         nltk.download("wordnet", download_dir=data_dir)
+        logger.info("WordNet data downloaded successfully!")
         print("WordNet data downloaded successfully!")
+    else:
+        logger.debug("WordNet data already exists, skipping download")
 
 
 def _initialize_nltk_threaded():
@@ -41,19 +51,28 @@ def _initialize_nltk_threaded():
     
     with _nltk_init_lock:
         if not _nltk_initialized:
+            logger.info("Starting NLTK initialization in background thread")
             print("Initializing NLTK...")
-            import nltk
-            from nltk.corpus import wordnet
-            
-            _nltk = nltk
-            _wordnet = wordnet
-            
-            # Add the data directory to NLTK's data path
-            if data_dir not in nltk.data.path:
-                nltk.data.path.append(data_dir)
-            
-            _nltk_initialized = True
-            print("NLTK initialization complete!")
+            try:
+                import nltk
+                from nltk.corpus import wordnet
+                
+                _nltk = nltk
+                _wordnet = wordnet
+                
+                # Add the data directory to NLTK's data path
+                if data_dir not in nltk.data.path:
+                    nltk.data.path.append(data_dir)
+                    logger.debug(f"Added {data_dir} to NLTK data path")
+                
+                _nltk_initialized = True
+                logger.info("NLTK initialization completed successfully")
+                print("NLTK initialization complete!")
+            except Exception as e:
+                logger.error(f"Failed to initialize NLTK: {e}", exc_info=True)
+                raise
+        else:
+            logger.debug("NLTK already initialized, skipping")
 
 
 def first_init():
@@ -61,21 +80,26 @@ def first_init():
     Initialize NLTK and WordNet data before the program runs.
     Downloads WordNet if not present and imports NLTK in a separate thread.
     """
+    logger.info("Starting NLTK and WordNet initialization process")
     # First, do a quick import of nltk to check if wordnet exists
     import nltk
     
     # Add the data directory to NLTK's data path
     if data_dir not in nltk.data.path:
         nltk.data.path.append(data_dir)
+        logger.debug(f"Added {data_dir} to NLTK data path")
     
     # Check if wordnet data exists, download if not
     try:
         nltk.data.find("corpora/wordnet")
+        logger.info("WordNet data found!")
         print("WordNet data found!")
     except LookupError:
+        logger.warning("WordNet data not found, downloading...")
         _download_wordnet()
     
     # Start NLTK initialization in a separate thread
+    logger.debug("Starting NLTK initialization thread")
     init_thread = threading.Thread(target=_initialize_nltk_threaded, daemon=True)
     init_thread.start()
     
@@ -90,15 +114,25 @@ def _wait_for_nltk_init():
 
 def get_synonyms(word):
     """Get synonyms for a word using WordNet"""
+    logger.debug(f"Getting synonyms for word: '{word}'")
     _wait_for_nltk_init()  # Ensure NLTK is initialized
     
     if _wordnet is None:
+        logger.warning("WordNet not available, returning empty synonyms list")
         return []
     
     synonyms = set()
-    for synset in _wordnet.synsets(word):
-        for lemma in synset.lemmas():
-            synonyms.add(lemma.name().replace('_', ' '))
+    try:
+        for synset in _wordnet.synsets(word):
+            for lemma in synset.lemmas():
+                synonyms.add(lemma.name().replace('_', ' '))
+        
+        synonym_list = list(synonyms)
+        logger.debug(f"Found {len(synonym_list)} synonyms for '{word}': {synonym_list[:5]}...")
+        return synonym_list
+    except Exception as e:
+        logger.error(f"Error getting synonyms for '{word}': {e}")
+        return []
     return list(synonyms)
 
 

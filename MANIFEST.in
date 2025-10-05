@@ -4,3 +4,6 @@ include src/pyDictionary/data/*
 
 recursive-exclude __pycache__ *
 recursive-exclude *.py[co] *
+recursive-exclude logs *
+
+recursive-exclude src/richword/data/nltk_data *

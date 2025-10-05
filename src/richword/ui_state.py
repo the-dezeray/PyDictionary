@@ -3,7 +3,7 @@
 from rich.table import Table
 from rich.padding import Padding
 from rich.align import Align
-
+from .util.logger import get_logger
 from .app_state import AppState, DictionaryState, GameState
 from .logic.command_registry import get_command_mapping
 from .logic import commands
@@ -12,11 +12,15 @@ from typing import TYPE_CHECKING, Callable
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from .ui_manager import UIManager
+
+logger = get_logger(__name__)
 class UiState():
     """process keyboard inputs/commands and updating layout appearance""" 
 
     def __init__(self) -> None:
+        logger.debug("Initializing UiState")
         self.PRIMARY_KEY_WORD_MAPPING = get_command_mapping(self)
+        logger.debug(f"Loaded {len(self.PRIMARY_KEY_WORD_MAPPING)} command mappings")
 
         #Core Related
         self.current_entry_text :str= ""
